@@ -39,7 +39,7 @@
   /* ✅ Telegram viewport vars */
   --app-h: 100vh;
 
-  /* ✅✅✅ ВАЖНО: высота нижней sticky панели (будет считаться JS) */
+  /* ✅ нижняя sticky панель (будет считаться JS) */
   --sticky-h: 92px;
 }
 
@@ -97,11 +97,12 @@ body{
   border-bottom: 1px solid rgba(216,176,76,.75);
 }
 
+/* ✅ логотип чуть больше */
 .logo-frame{
   position:absolute;
   left:12px;
-  width:64px;
-  height:64px;
+  width:70px;
+  height:70px;
   border-radius:18px;
   background:linear-gradient(180deg, rgba(255,255,255,.06), rgba(255,255,255,.02));
   border:1px solid rgba(216,176,76,.30);
@@ -112,8 +113,8 @@ body{
   overflow:hidden;
 }
 .logo-frame img{
-  width:44px;
-  height:44px;
+  width:50px;
+  height:50px;
   object-fit:contain;
   filter: drop-shadow(0 10px 18px rgba(0,0,0,.55));
 }
@@ -169,18 +170,19 @@ body{
 .burger span:nth-child(2){top:6.5px;}
 .burger span:nth-child(3){bottom:0;}
 
+/* ✅✅ FIX: geo и search больше не наезжают друг на друга */
 .geo-btn{
   position:absolute;
-  right:18px;
-  top:58px;
-  width:34px;
-  height:34px;
+  right:14px;
+  top:60px;            /* под бургером */
+  width:36px;
+  height:36px;
   border-radius:50%;
   display:flex;
   align-items:center;
   justify-content:center;
   cursor:pointer;
-  z-index:80;
+  z-index:75;
 
   color:var(--text);
   background:linear-gradient(180deg, rgba(255,255,255,.06), rgba(255,255,255,.02));
@@ -192,8 +194,8 @@ body{
 
 .search-btn{
   position:absolute;
-  right:14px;
-  bottom:10px;
+  right:60px;          /* ✅ сдвинули влево */
+  top:60px;            /* ✅ на одной линии с geo */
   width:36px;
   height:36px;
   border-radius:50%;
@@ -203,7 +205,7 @@ body{
   font-size:16px;
   font-weight:700;
   cursor:pointer;
-  z-index:60;
+  z-index:74;
 
   color:var(--text);
   background:linear-gradient(180deg, rgba(255,255,255,.06), rgba(255,255,255,.02));
@@ -235,7 +237,6 @@ body{
   color:var(--text);
 }
 .btn:active{transform:scale(.98);}
-
 .btn.active{
   background: linear-gradient(135deg, var(--gold), var(--gold-2));
   color:#141416;
@@ -369,10 +370,17 @@ body{
 
 textarea.input{height:90px;}
 
+/* ✅✅ FIX: кнопка заказа НЕ перекрывается sticky корзиной:
+   делаем запас снизу внутри корзины и чуть меньше margin у кнопки */
+.cart{
+  padding-bottom: calc(16px + var(--sticky-h, 92px) + 18px);
+}
+
+/* кнопка заказа */
 .order-btn{
   width:100%;
   padding:18px;
-  margin-top:14px;
+  margin-top:12px;
   border-radius:var(--r-lg);
   cursor:pointer;
   color:#141416;
@@ -653,6 +661,12 @@ mark{background:rgba(216,176,76,.22);padding:0 .12em;border-radius:6px;color:var
 .about-head b{font-size:16px;}
 .about-body{font-size:14px;line-height:1.45;}
 .about-muted{opacity:.78;}
+
+@media (max-width:360px){
+  .brand-title{font-size:30px;}
+  .logo-frame{width:66px;height:66px;}
+  .logo-frame img{width:48px;height:48px;}
+}
 </style>
 </head>
 
@@ -675,9 +689,8 @@ mark{background:rgba(216,176,76,.22);padding:0 .12em;border-radius:6px;color:var
     <div class="burger"><span></span><span></span><span></span></div>
   </div>
 
-  <div class="geo-btn" onclick="requestGeo()" title="Геолокация">📍</div>
-
   <div class="search-btn" onclick="toggleSearch()">🔍</div>
+  <div class="geo-btn" onclick="requestGeo()" title="Геолокация">📍</div>
 </div>
 
 <div class="menu-backdrop" id="menuBackdrop" onclick="closeTopMenu()"></div>
@@ -778,8 +791,8 @@ mark{background:rgba(216,176,76,.22);padding:0 .12em;border-radius:6px;color:var
 </div>
 
 <div class="langs">
-  <button class="btn active" onclick="setLang('ru',this)">RU</button>
-  <button class="btn" onclick="setLang('uz',this)">UZ</button>
+  <button class="btn" onclick="setLang('ru',this)">RU</button>
+  <button class="btn active" onclick="setLang('uz',this)">UZ</button>
   <button class="btn" onclick="setLang('en',this)">EN</button>
 </div>
 
@@ -788,26 +801,35 @@ mark{background:rgba(216,176,76,.22);padding:0 .12em;border-radius:6px;color:var
   <div class="popular-row" id="popularRow"></div>
 </div>
 
+<!-- ✅ Ниже Популярное: убрали блок категорий (tabs) -->
+<!-- <div class="categories" id="cats"></div> -->
+
 <div class="quick-filters" id="quickFilters"></div>
 
 <div class="types">
-  <button class="btn active" id="btnDelivery" onclick="setType('delivery',this)"></button>
-  <button class="btn" id="btnPickup" onclick="setType('pickup',this)"></button>
+  <button class="btn" id="btnDelivery" onclick="setType('delivery',this)"></button>
+  <button class="btn active" id="btnPickup" onclick="setType('pickup',this)"></button>
 </div>
 
 <input id="address" class="input">
 <input id="phone" class="input">
 
-<div class="categories" id="cats"></div>
 <div class="products" id="products"></div>
 
 <div class="cart" id="cartBox">
-  <b id="cartTitle"></b>: <span id="total">0</span> сум
+  <b id="cartTitle"></b>:
+  <span id="total">0</span> сум
+  <div id="deliveryLine" style="margin-top:8px; font-weight:900; color:var(--gold); display:none;">
+    Доставка: <span id="deliveryFee">15 000</span> сум
+  </div>
+
   <textarea id="comment" class="input"></textarea>
+
   <div class="payments">
     <button class="btn active" id="payCash" onclick="setPayment('cash')"></button>
     <button class="btn" id="payClick" onclick="setPayment('click')"></button>
   </div>
+
   <button class="order-btn" id="orderBtn" onclick="sendOrder()"></button>
 </div>
 
@@ -919,6 +941,7 @@ function requestGeo(){
   }, {enableHighAccuracy:true, timeout:8000, maximumAge:0});
 }
 
+/* меню */
 function openTopMenu(){
   try{ closeSearch(); }catch(_){}
   document.getElementById('menuBackdrop').classList.add('show');
@@ -928,7 +951,6 @@ function closeTopMenu(){
   document.getElementById('menuBackdrop').classList.remove('show');
   document.getElementById('menuSheet').classList.remove('show');
 }
-
 function toggleReviewWidget(){
   const w = document.getElementById('reviewWidgetWrap');
   w.style.display = (w.style.display === 'none' || !w.style.display) ? 'block' : 'none';
@@ -944,7 +966,6 @@ function openYandexReviews(e){
   }catch(_){}
   window.open(url, "_blank");
 }
-
 function openInstagram(e){
   try{ e.preventDefault(); e.stopPropagation(); }catch(_){}
   const url = "https://www.instagram.com/orzu_dil/";
@@ -957,7 +978,6 @@ function openInstagram(e){
   }catch(_){}
   window.open(url, "_blank");
 }
-
 function openAbout(){
   closeTopMenu();
   document.getElementById('aboutModal').classList.add('show');
@@ -969,26 +989,23 @@ function aboutBackdropClick(e){
   if(e.target && e.target.id === 'aboutModal') closeAbout();
 }
 
+/* ---------- DATA ---------- */
 const tgUser = Telegram.WebApp.initDataUnsafe?.user || {};
 const tg_username = tgUser.username || "";
 const tg_first_name = tgUser.first_name || "";
 const tg_id = tgUser.id || "";
 
-let lang='ru',category='breakfast',type='delivery',payment='cash',cart={};
+/* ✅ по умолчанию: UZ + самовывоз */
+let lang='uz', category='breakfast', type='pickup', payment='cash', cart={};
+
+const DELIVERY_FEE = 15000;
 
 const TEXT={
-  ru:{delivery:'🚚 Доставка',pickup:'🏃 Самовывоз',address:'📍 Адрес доставки',phone:'📞 Телефон',cart:'🛒 Корзина',order:'Оформить заказ',comment:'✍️ Комментарий к заказу',cash:'💵 Наличные',click:'💳 CLICK',results:'Результаты поиска',popular:'🔥 Популярное',empty:'Корзина пустая'},
-  uz:{delivery:'🚚 Yetkazish',pickup:'🏃 Olib ketish',address:'📍 Manzil',phone:'📞 Telefon',cart:'🛒 Savat',order:'Buyurtma berish',comment:'✍️ Izoh',cash:'💵 Naqd',click:'💳 CLICK',results:'Qidiruv natijalari',popular:'🔥 Ommabop',empty:"Savat bo‘sh"},
-  en:{delivery:'🚚 Delivery',pickup:'🏃 Pickup',address:'📍 Address',phone:'📞 Phone',cart:'🛒 Cart',order:'Place order',comment:'✍️ Comment',cash:'💵 Cash',click:'💳 CLICK',results:'Search results',popular:'🔥 Popular',empty:'Cart is empty'}
+  ru:{delivery:'🚚 Доставка',pickup:'🏃 Самовывоз',address:'📍 Адрес доставки',phone:'📞 Телефон',cart:'🛒 Корзина',order:'Оформить заказ',comment:'✍️ Комментарий к заказу',cash:'💵 Наличные',click:'💳 CLICK',results:'Результаты поиска',popular:'🔥 Популярное',empty:'Корзина пустая',deliveryFee:'Доставка'},
+  uz:{delivery:'🚚 Yetkazish',pickup:'🏃 Olib ketish',address:'📍 Manzil',phone:'📞 Telefon',cart:'🛒 Savat',order:'Buyurtma berish',comment:'✍️ Izoh',cash:'💵 Naqd',click:'💳 CLICK',results:'Qidiruv natijalari',popular:'🔥 Ommabop',empty:"Savat bo‘sh",deliveryFee:'Yetkazish'},
+  en:{delivery:'🚚 Delivery',pickup:'🏃 Pickup',address:'📍 Address',phone:'📞 Phone',cart:'🛒 Cart',order:'Place order',comment:'✍️ Comment',cash:'💵 Cash',click:'💳 CLICK',results:'Search results',popular:'🔥 Popular',empty:'Cart is empty',deliveryFee:'Delivery'}
 };
 
-const CATS={
-  ru:{breakfast:'🍳 Завтрак',first:'🍜 Первые блюда',second:'🍲 Вторые блюда',shashlik:'🔥 Шашлык',fish:'🐟 Рыбные блюда',salad:'🥗 Салат',bread:'🥖 Хлеб',drinks:'🥤 Напитки',preorder:'📦 Под заказ'},
-  uz:{breakfast:'🍳 Nonushta',first:'🍜 Birinchi taomlar',second:'🍲 Ikkinchi taomlar',shashlik:'🔥 Shashlik',fish:'🐟 Baliq taomlari',salad:'🥗 Salat',bread:'🥖 Non',drinks:'🥤 Ichimliklar',preorder:'📦 Buyurtma bilan'},
-  en:{breakfast:'🍳 Breakfast',first:'🍜 First dishes',second:'🍲 Main dishes',shashlik:'🔥 Shashlik',fish:'🐟 Fish dishes',salad:'🥗 Salads',bread:'🥖 Bread',drinks:'🥤 Drinks',preorder:'📦 Pre-order'}
-};
-
-/* ✅✅✅ ПРАВКА: ВСЕ КАРТИНКИ = .jpg */
 const MENU = {
   breakfast:[
     {id:'pirozhki_myaso_1', p:7000,  img:'images/pirozhki_myaso_1.jpg', n:{ru:'Пирожки с мясом 1шт', uz:'Pirojki go‘shtli 1 dona', en:'Meat pie (1 pc)'}},
@@ -1075,12 +1092,12 @@ const POPULAR = ['plov_05','shurpa','lagman','tuy_kabob'];
 const ITEM_INDEX = {};
 for (const c in MENU){ MENU[c].forEach(it => { ITEM_INDEX[it.id] = it; }); }
 
-/* остальные функции без изменений */
 function nameOf(id){
   const it = ITEM_INDEX[id];
   if(!it) return id;
   return (it.n && (it.n[lang] || it.n.ru)) || id;
 }
+
 function formatSum(x){
   const n = Number(x) || 0;
   return n.toString().replace(/\B(?=(\d{3})+(?!\d))/g,' ');
@@ -1099,11 +1116,11 @@ function highlight(name, q){
   return `${before}<mark>${mid}</mark>${after}`;
 }
 
+/* элементы */
 const address = document.getElementById('address');
 const phone = document.getElementById('phone');
 const btnDelivery = document.getElementById('btnDelivery');
 const btnPickup = document.getElementById('btnPickup');
-const cats = document.getElementById('cats');
 const products = document.getElementById('products');
 const total = document.getElementById('total');
 const stickyTotal = document.getElementById('stickyTotal');
@@ -1122,6 +1139,8 @@ const popularRow = document.getElementById('popularRow');
 const cartBox = document.getElementById('cartBox');
 const stickyCartBtn = document.getElementById('stickyCartBtn');
 const popup = document.getElementById('popup');
+const deliveryLine = document.getElementById('deliveryLine');
+const deliveryFee = document.getElementById('deliveryFee');
 
 function loadSaved(){
   const a = localStorage.getItem('orzu_dil_address') || '';
@@ -1133,6 +1152,12 @@ function bindSave(){
   address.addEventListener('input', ()=>localStorage.setItem('orzu_dil_address', address.value));
   phone.addEventListener('input', ()=>localStorage.setItem('orzu_dil_phone', phone.value));
 }
+
+/* ✅ доставка: показываем строку и считаем 15000 */
+function getDeliveryFee(){
+  return (type === 'delivery') ? DELIVERY_FEE : 0;
+}
+
 function updateTypeFields(){
   if(type === 'pickup'){
     address.style.display = 'none';
@@ -1140,13 +1165,20 @@ function updateTypeFields(){
   }else{
     address.style.display = 'block';
   }
+
+  const fee = getDeliveryFee();
+  deliveryFee.innerText = formatSum(DELIVERY_FEE);
+  deliveryLine.style.display = fee > 0 ? 'block' : 'none';
+  deliveryLine.firstChild.textContent = (TEXT[lang].deliveryFee + ': ');
 }
+
 function setLang(l,b){
   lang=l;
   document.querySelectorAll('.langs .btn').forEach(x=>x.classList.remove('active'));
   b.classList.add('active');
   applyLang();
 }
+
 function applyLang(){
   btnDelivery.innerText=TEXT[lang].delivery;
   btnPickup.innerText=TEXT[lang].pickup;
@@ -1163,17 +1195,18 @@ function applyLang(){
 
   renderPopular();
   renderQuickFilters();
-  renderCats();
   renderProducts();
   updateTotal();
   updateTypeFields();
 
   setTimeout(setStickyHeight, 50);
 }
+
 function openCart(){
   try{ cartBox.scrollIntoView({behavior:'smooth', block:'start'}); }
   catch(_){ window.location.hash = '#cartBox'; }
 }
+
 function renderPopular(){
   popularRow.innerHTML = '';
   POPULAR.forEach((id)=>{
@@ -1197,6 +1230,7 @@ function renderPopular(){
     `;
   });
 }
+
 function onPopularCardClick(e,id){
   if(e && e.target && (e.target.closest && e.target.closest('button'))) return;
   chg(id, 1);
@@ -1204,6 +1238,7 @@ function onPopularCardClick(e,id){
   if(pc) pc.innerText = cart[id] || 0;
   if(isSearchOpen()) closeSearch();
 }
+
 function popChg(e,id,delta){
   if(e){ e.preventDefault(); e.stopPropagation(); }
   chg(id, delta);
@@ -1211,32 +1246,35 @@ function popChg(e,id,delta){
   if(pc) pc.innerText = cart[id] || 0;
   if(isSearchOpen()) closeSearch();
 }
+
+/* quick filters = выбор категории */
 function renderQuickFilters(){
-  const keys = ['breakfast','second','first','drinks'];
+  const keys = ['breakfast','second','first','shashlik','fish','salad','bread','drinks','preorder'];
   quickFilters.innerHTML = '';
   keys.forEach(k=>{
     if(!MENU[k]) return;
-    quickFilters.innerHTML += `<button class="qbtn" onclick="pickCategory('${k}')">${CATS[lang][k]}</button>`;
+    const label = ({
+      breakfast:{ru:'🍳 Завтрак',uz:'🍳 Nonushta',en:'🍳 Breakfast'},
+      first:{ru:'🍜 Первые блюда',uz:'🍜 Birinchi',en:'🍜 First'},
+      second:{ru:'🍲 Вторые блюда',uz:'🍲 Ikkinchi',en:'🍲 Main'},
+      shashlik:{ru:'🔥 Шашлык',uz:'🔥 Shashlik',en:'🔥 Shashlik'},
+      fish:{ru:'🐟 Рыбные',uz:'🐟 Baliq',en:'🐟 Fish'},
+      salad:{ru:'🥗 Салат',uz:'🥗 Salat',en:'🥗 Salad'},
+      bread:{ru:'🥖 Хлеб',uz:'🥖 Non',en:'🥖 Bread'},
+      drinks:{ru:'🥤 Напитки',uz:'🥤 Ichimlik',en:'🥤 Drinks'},
+      preorder:{ru:'📦 Под заказ',uz:'📦 Buyurtma',en:'📦 Pre-order'}
+    })[k][lang] || k;
+
+    quickFilters.innerHTML += `<button class="qbtn" onclick="pickCategory('${k}')">${label}</button>`;
   });
 }
+
 function pickCategory(k){
   if(isSearchOpen()) closeSearch();
   category = k;
-  renderCats();
   renderProducts();
 }
-function renderCats(){
-  cats.innerHTML='';
-  for(let k in MENU){
-    cats.innerHTML+=`<button class="btn ${k===category?'active':''}" onclick="category='${k}';renderCats();renderProducts()">${CATS[lang][k] || k}</button>`;
-  }
-  setTimeout(()=>{
-    const active = cats.querySelector('.btn.active');
-    if(active && active.scrollIntoView){
-      active.scrollIntoView({behavior:'smooth', inline:'center', block:'nearest'});
-    }
-  }, 50);
-}
+
 function cardHTML(it, q=''){
   const id = it.id;
   const displayName = nameOf(id);
@@ -1254,6 +1292,7 @@ function cardHTML(it, q=''){
     </div>
   </div>`;
 }
+
 function renderProducts(){
   products.innerHTML='';
   (MENU[category] || []).forEach((it)=>{
@@ -1261,12 +1300,14 @@ function renderProducts(){
     products.innerHTML+=cardHTML(it,'');
   });
 }
+
 function syncPopularCounters(){
   POPULAR.forEach((id)=>{
     const el = document.getElementById('pc_'+id);
     if(el) el.innerText = cart[id] || 0;
   });
 }
+
 function chg(id,v){
   cart[id]=Math.max(0,(cart[id]||0)+v);
   const el = document.getElementById('c_'+id);
@@ -1274,28 +1315,46 @@ function chg(id,v){
   updateTotal();
   syncPopularCounters();
 }
+
 function price(id){
   return (ITEM_INDEX[id] && ITEM_INDEX[id].p) ? ITEM_INDEX[id].p : 0;
 }
-function updateTotal(){
+
+/* ✅ total + доставка */
+function calcItemsSum(){
   let s=0;
   for(let id in cart) s += (cart[id]||0) * price(id);
-  total.innerText = formatSum(s);
-  stickyTotal.innerText = formatSum(s);
+  return s;
 }
+
+function updateTotal(){
+  const itemsSum = calcItemsSum();
+  const fee = getDeliveryFee();
+  const grand = itemsSum + fee;
+
+  total.innerText = formatSum(grand);
+  stickyTotal.innerText = formatSum(grand);
+
+  updateTypeFields();
+}
+
 function setType(t,b){
   if(isSearchOpen()) closeSearch();
   type=t;
   document.querySelectorAll('.types .btn').forEach(x=>x.classList.remove('active'));
   b.classList.add('active');
   updateTypeFields();
+  updateTotal();
 }
+
 function setPayment(p){
   payment=p;
   payCash.classList.toggle('active',p==='cash');
   payClick.classList.toggle('active',p==='click');
 }
+
 function isSearchOpen(){ return searchWrap.classList.contains('show'); }
+
 function toggleSearch(){
   if(isSearchOpen()) closeSearch();
   else openSearch();
@@ -1303,7 +1362,6 @@ function toggleSearch(){
 function openSearch(){
   searchWrap.classList.add('show');
   searchTitle.classList.add('show');
-  cats.style.display = 'none';
   quickFilters.style.display = 'none';
   popularWrap.style.display = 'none';
   searchInput.value = '';
@@ -1313,16 +1371,17 @@ function openSearch(){
 function closeSearch(){
   searchWrap.classList.remove('show');
   searchTitle.classList.remove('show');
-  cats.style.display = '';
   quickFilters.style.display = '';
   popularWrap.style.display = '';
   searchInput.value = '';
   renderProducts();
 }
 function clearSearch(){ closeSearch(); }
+
 function onSearchKey(e){
   if(e.key === 'Enter') closeSearch();
 }
+
 function searchProducts(){
   const q = (searchInput.value || '').trim().toLowerCase();
   products.innerHTML='';
@@ -1370,11 +1429,11 @@ function genOrderId(){
   const num = String(n).padStart(3,'0');
   return `ORZ-${dd}${mm}-${num}`;
 }
+
 function calcTotalNum(){
-  let s = 0;
-  for (const id in cart) s += (Number(cart[id] || 0) * price(id));
-  return s;
+  return calcItemsSum() + getDeliveryFee();
 }
+
 function sendOrder(){
   popup.classList.add('show');
 
@@ -1404,6 +1463,7 @@ function sendOrder(){
     items,
     total: total.innerText,
     total_num: calcTotalNum(),
+    delivery_fee: getDeliveryFee(),
     payment,
     type,
     address: (type==='pickup' ? '' : address.value),
@@ -1419,9 +1479,17 @@ function sendOrder(){
   }, 700);
 }
 
+/* init defaults */
+function setDefaultsUI(){
+  // lang UZ already active in HTML
+  // type pickup already active in HTML
+  // apply placeholders and render
+}
 loadSaved();
 bindSave();
 applyLang();
+updateTypeFields();
+updateTotal();
 </script>
 </body>
 </html>
