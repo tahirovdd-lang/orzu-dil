@@ -222,6 +222,29 @@ body{
   justify-content:center;
 }
 
+/* ✅ категории блюд БОЛЬШЕ (quick filters) */
+.quick-filters{
+  display:flex;
+  gap:12px;
+  padding:0 12px 12px;
+  overflow-x:auto;
+}
+.qbtn{
+  border:1px solid rgba(216,176,76,.26);
+  background:linear-gradient(180deg, rgba(255,255,255,.06), rgba(255,255,255,.03));
+  box-shadow: 0 14px 30px rgba(0,0,0,.46);
+  border-radius:999px;
+
+  padding:14px 18px;        /* ✅ больше */
+  font-weight:900;
+  font-size:14px;           /* ✅ больше */
+  cursor:pointer;
+  white-space:nowrap;
+  transition:.15s;
+  color:var(--text);
+}
+.qbtn:active{transform:scale(.98);}
+
 .btn{
   padding:12px 20px;
   border-radius:var(--r-pill);
@@ -410,6 +433,68 @@ textarea.input{height:90px;}
   color:var(--text);
 }
 
+/* ✅✅ Платежи в ОДНУ строку */
+.payments{
+  display:flex;
+  gap:10px;
+  padding:12px;
+  justify-content:space-between;
+}
+.payments .btn{
+  min-width:0;
+  flex:1 1 0;
+  padding:12px 10px;     /* компактнее чтобы влезло 3 */
+  font-size:13px;
+}
+
+/* ✅ Онлайн-детали (карта/получатель) */
+.online-details{
+  margin:4px 12px 0;
+  padding:12px;
+  border-radius:18px;
+  border:1px solid rgba(216,176,76,.20);
+  background:linear-gradient(180deg, rgba(255,255,255,.06), rgba(255,255,255,.03));
+  box-shadow: 0 16px 34px rgba(0,0,0,.45);
+  display:none;
+}
+.online-details.show{display:block;}
+
+.online-row{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:10px;
+  padding:10px 10px;
+  border-radius:14px;
+  background:rgba(255,255,255,.04);
+  border:1px solid rgba(216,176,76,.14);
+  margin-top:10px;
+}
+.online-row:first-child{margin-top:0;}
+
+.online-left{min-width:0;}
+.online-label{font-weight:900; font-size:12px; opacity:.78;}
+.online-value{
+  font-weight:900;
+  font-size:15px;
+  margin-top:3px;
+  word-break:break-word;
+}
+.copy-btn{
+  flex:0 0 auto;
+  padding:10px 12px;
+  border-radius:14px;
+  border:1px solid rgba(255,255,255,.18);
+  background:linear-gradient(135deg,var(--gold), var(--gold-2));
+  color:#141416;
+  font-weight:900;
+  cursor:pointer;
+  box-shadow: 0 14px 30px rgba(216,176,76,.12), 0 12px 24px rgba(0,0,0,.35);
+  transition:.15s;
+  white-space:nowrap;
+}
+.copy-btn:active{transform:scale(.98);}
+
 .search-wrap{
   width:85%;
   margin:8px auto;
@@ -453,26 +538,6 @@ textarea.input{height:90px;}
 .search-title.show{display:block;}
 
 mark{background:rgba(216,176,76,.22);padding:0 .12em;border-radius:6px;color:var(--text);}
-
-.quick-filters{
-  display:flex;
-  gap:10px;
-  padding:0 12px 10px;
-  overflow-x:auto;
-}
-.qbtn{
-  border:1px solid rgba(216,176,76,.22);
-  background:linear-gradient(180deg, rgba(255,255,255,.05), rgba(255,255,255,.02));
-  box-shadow: 0 12px 26px rgba(0,0,0,.42);
-  border-radius:999px;
-  padding:10px 14px;
-  font-weight:900;
-  cursor:pointer;
-  white-space:nowrap;
-  transition:.15s;
-  color:var(--text);
-}
-.qbtn:active{transform:scale(.98);}
 
 .popular-wrap{width:100%;padding:4px 12px 6px;}
 .popular-title{width:100%;font-weight:900;padding:8px 2px 10px;display:flex;align-items:center;gap:8px;color:var(--text);}
@@ -666,6 +731,9 @@ mark{background:rgba(216,176,76,.22);padding:0 .12em;border-radius:6px;color:var
   .brand-title{font-size:30px;}
   .logo-frame{width:66px;height:66px;}
   .logo-frame img{width:48px;height:48px;}
+  .payments{gap:8px;}
+  .payments .btn{padding:12px 8px; font-size:12.5px;}
+  .qbtn{padding:13px 16px; font-size:13.5px;}
 }
 </style>
 </head>
@@ -828,6 +896,27 @@ mark{background:rgba(216,176,76,.22);padding:0 .12em;border-radius:6px;color:var
   <div class="payments">
     <button class="btn active" id="payCash" onclick="setPayment('cash')"></button>
     <button class="btn" id="payClick" onclick="setPayment('click')"></button>
+    <!-- ✅ НОВОЕ: Онлайн -->
+    <button class="btn" id="payOnline" onclick="setPayment('online')"></button>
+  </div>
+
+  <!-- ✅ НОВОЕ: детали для Онлайн (копирование) -->
+  <div class="online-details" id="onlineDetails">
+    <div class="online-row">
+      <div class="online-left">
+        <div class="online-label" id="onlineCardLabel">Номер карты</div>
+        <div class="online-value" id="onlineCardValue">8600 0000 0000 0000</div>
+      </div>
+      <button class="copy-btn" type="button" onclick="copyOnline('card')">Копировать</button>
+    </div>
+
+    <div class="online-row">
+      <div class="online-left">
+        <div class="online-label" id="onlineNameLabel">Получатель</div>
+        <div class="online-value" id="onlineNameValue">ORZU-DIL</div>
+      </div>
+      <button class="copy-btn" type="button" onclick="copyOnline('name')">Копировать</button>
+    </div>
   </div>
 
   <button class="order-btn" id="orderBtn" onclick="sendOrder()"></button>
@@ -1001,9 +1090,9 @@ let lang='uz', category='breakfast', type='pickup', payment='cash', cart={};
 const DELIVERY_FEE = 15000;
 
 const TEXT={
-  ru:{delivery:'🚚 Доставка',pickup:'🏃 Самовывоз',address:'📍 Адрес доставки',phone:'📞 Телефон',cart:'🛒 Корзина',order:'Оформить заказ',comment:'✍️ Комментарий к заказу',cash:'💵 Наличные',click:'💳 CLICK',results:'Результаты поиска',popular:'🔥 Популярное',empty:'Корзина пустая',deliveryFee:'Доставка'},
-  uz:{delivery:'🚚 Yetkazish',pickup:'🏃 Olib ketish',address:'📍 Manzil',phone:'📞 Telefon',cart:'🛒 Savat',order:'Buyurtma berish',comment:'✍️ Izoh',cash:'💵 Naqd',click:'💳 CLICK',results:'Qidiruv natijalari',popular:'🔥 Ommabop',empty:"Savat bo‘sh",deliveryFee:'Yetkazish'},
-  en:{delivery:'🚚 Delivery',pickup:'🏃 Pickup',address:'📍 Address',phone:'📞 Phone',cart:'🛒 Cart',order:'Place order',comment:'✍️ Comment',cash:'💵 Cash',click:'💳 CLICK',results:'Search results',popular:'🔥 Popular',empty:'Cart is empty',deliveryFee:'Delivery'}
+  ru:{delivery:'🚚 Доставка',pickup:'🏃 Самовывоз',address:'📍 Адрес доставки',phone:'📞 Телефон',cart:'🛒 Корзина',order:'Оформить заказ',comment:'✍️ Комментарий к заказу',cash:'💵 Наличные',click:'💳 CLICK',online:'💳 Онлайн',results:'Результаты поиска',popular:'🔥 Популярное',empty:'Корзина пустая',deliveryFee:'Доставка',card:'Номер карты',receiver:'Получатель',copied:'Скопировано ✅',copy:'Копировать'},
+  uz:{delivery:'🚚 Yetkazish',pickup:'🏃 Olib ketish',address:'📍 Manzil',phone:'📞 Telefon',cart:'🛒 Savat',order:'Buyurtma berish',comment:'✍️ Izoh',cash:'💵 Naqd',click:'💳 CLICK',online:'💳 Online',results:'Qidiruv natijalari',popular:'🔥 Ommabop',empty:"Savat bo‘sh",deliveryFee:'Yetkazish',card:'Karta raqami',receiver:'Qabul qiluvchi',copied:'Nusxa olindi ✅',copy:'Nusxa'},
+  en:{delivery:'🚚 Delivery',pickup:'🏃 Pickup',address:'📍 Address',phone:'📞 Phone',cart:'🛒 Cart',order:'Place order',comment:'✍️ Comment',cash:'💵 Cash',click:'💳 CLICK',online:'💳 Online',results:'Search results',popular:'🔥 Popular',empty:'Cart is empty',deliveryFee:'Delivery',card:'Card number',receiver:'Receiver',copied:'Copied ✅',copy:'Copy'}
 };
 
 const MENU = {
@@ -1129,6 +1218,10 @@ const orderBtn = document.getElementById('orderBtn');
 const comment = document.getElementById('comment');
 const payCash = document.getElementById('payCash');
 const payClick = document.getElementById('payClick');
+const payOnline = document.getElementById('payOnline');          // ✅
+const onlineDetails = document.getElementById('onlineDetails');  // ✅
+const onlineCardLabel = document.getElementById('onlineCardLabel');
+const onlineNameLabel = document.getElementById('onlineNameLabel');
 const searchWrap = document.getElementById('searchWrap');
 const searchTitle = document.getElementById('searchTitle');
 const searchInput = document.getElementById('searchInput');
@@ -1141,6 +1234,12 @@ const stickyCartBtn = document.getElementById('stickyCartBtn');
 const popup = document.getElementById('popup');
 const deliveryLine = document.getElementById('deliveryLine');
 const deliveryFee = document.getElementById('deliveryFee');
+
+/* ✅ ДАННЫЕ ОНЛАЙН ОПЛАТЫ (поменяй на свои) */
+const ONLINE_PAY = {
+  card: "8600 0000 0000 0000",
+  receiver: "ORZU-DIL"
+};
 
 function loadSaved(){
   const a = localStorage.getItem('orzu_dil_address') || '';
@@ -1172,6 +1271,52 @@ function updateTypeFields(){
   deliveryLine.firstChild.textContent = (TEXT[lang].deliveryFee + ': ');
 }
 
+/* ✅ Показ/скрытие онлайн деталей */
+function updateOnlineUI(){
+  const show = (payment === 'online');
+  onlineDetails.classList.toggle('show', show);
+}
+
+/* ✅ Копирование */
+async function copyTextToClipboard(txt){
+  const t = String(txt || '').trim();
+  if(!t) return false;
+
+  try{
+    if(navigator.clipboard && window.isSecureContext){
+      await navigator.clipboard.writeText(t);
+      return true;
+    }
+  }catch(_){}
+
+  try{
+    const ta = document.createElement('textarea');
+    ta.value = t;
+    ta.style.position = 'fixed';
+    ta.style.left = '-9999px';
+    ta.style.top = '0';
+    document.body.appendChild(ta);
+    ta.focus();
+    ta.select();
+    const ok = document.execCommand('copy');
+    document.body.removeChild(ta);
+    return !!ok;
+  }catch(_){}
+  return false;
+}
+
+async function copyOnline(which){
+  const value = (which === 'card') ? ONLINE_PAY.card : ONLINE_PAY.receiver;
+  const ok = await copyTextToClipboard(value);
+
+  const msg = ok ? (TEXT[lang].copied || 'Скопировано ✅') : 'Не удалось скопировать';
+  try{
+    Telegram.WebApp.showPopup?.({ title: 'OK', message: msg, buttons:[{id:'ok', type:'ok'}] });
+  }catch(_){
+    try{ alert(msg); }catch(__){}
+  }
+}
+
 function setLang(l,b){
   lang=l;
   document.querySelectorAll('.langs .btn').forEach(x=>x.classList.remove('active'));
@@ -1187,17 +1332,33 @@ function applyLang(){
   cartTitle.innerText=TEXT[lang].cart;
   orderBtn.innerText=TEXT[lang].order;
   comment.placeholder=TEXT[lang].comment;
+
   payCash.innerText=TEXT[lang].cash;
   payClick.innerText=TEXT[lang].click;
+  payOnline.innerText=TEXT[lang].online;                 // ✅
+
+  onlineCardLabel.innerText = TEXT[lang].card;           // ✅
+  onlineNameLabel.innerText = TEXT[lang].receiver;       // ✅
+
+  // кнопки "копировать" — локализация (без удаления, просто обновим текст)
+  document.querySelectorAll('.copy-btn').forEach(btn=>{
+    btn.innerText = TEXT[lang].copy || 'Копировать';
+  });
+
   searchTitle.innerText = TEXT[lang].results;
   popularTitle.innerText = TEXT[lang].popular;
   stickyCartBtn.innerText = TEXT[lang].cart;
+
+  // значения онлайн оплаты
+  document.getElementById('onlineCardValue').innerText = ONLINE_PAY.card;
+  document.getElementById('onlineNameValue').innerText = ONLINE_PAY.receiver;
 
   renderPopular();
   renderQuickFilters();
   renderProducts();
   updateTotal();
   updateTypeFields();
+  updateOnlineUI();
 
   setTimeout(setStickyHeight, 50);
 }
@@ -1347,10 +1508,13 @@ function setType(t,b){
   updateTotal();
 }
 
+/* ✅ 3 оплаты: cash / click / online */
 function setPayment(p){
   payment=p;
   payCash.classList.toggle('active',p==='cash');
   payClick.classList.toggle('active',p==='click');
+  payOnline.classList.toggle('active',p==='online');
+  updateOnlineUI();
 }
 
 function isSearchOpen(){ return searchWrap.classList.contains('show'); }
@@ -1470,7 +1634,10 @@ function sendOrder(){
     phone: phone.value,
     comment: comment.value,
     order_id: genOrderId(),
-    lang
+    lang,
+
+    /* ✅ добавим онлайн реквизиты в payload (если выбрано online) */
+    online_payment: (payment === 'online') ? { card: ONLINE_PAY.card, receiver: ONLINE_PAY.receiver } : null
   };
 
   setTimeout(()=>{
