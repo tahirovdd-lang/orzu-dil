@@ -10,15 +10,15 @@
 <style>
 :root{
   /* ✅ Variant D — Premium Uzbek (dark + gold) */
-  --bg:#0B0B0C;                 /* almost black background */
-  --surface:#141416;            /* cards/panels */
-  --surface-2:#101012;          /* soft fills */
-  --text:#F4F2EA;               /* warm premium white */
+  --bg:#0B0B0C;
+  --surface:#141416;
+  --surface-2:#101012;
+  --text:#F4F2EA;
   --muted: rgba(244,242,234,.72);
 
-  --gold:#D8B04C;               /* premium gold */
-  --gold-2:#B88922;             /* deep gold */
-  --header:#0B0B0C;             /* top bar */
+  --gold:#D8B04C;
+  --gold-2:#B88922;
+  --header:#0B0B0C;
 
   /* keep old var names used across layout */
   --emerald: var(--gold);
@@ -26,7 +26,7 @@
   --green: var(--gold);
   --meat: var(--gold);
 
-  --stroke: rgba(216,176,76,.18);          /* gold stroke */
+  --stroke: rgba(216,176,76,.18);
   --stroke-strong: rgba(216,176,76,.32);
   --inner: rgba(255,255,255,.06);
   --shadow: rgba(0,0,0,.40);
@@ -43,7 +43,7 @@
   --sticky-h: 92px;
 }
 
-/* (оставляем переключатель темы: в Premium по умолчанию уже “dark”) */
+/* оставляем dark как основной */
 body[data-theme="dark"]{
   --bg:#070708;
   --surface:#121214;
@@ -63,18 +63,15 @@ body[data-theme="dark"]{
 }
 
 *{box-sizing:border-box;-webkit-tap-highlight-color:transparent;}
-
-html,body{
-  height:100%;
-  margin:0;
-  padding:0;
-}
+html,body{height:100%;margin:0;padding:0;}
 
 body{
   font-family:'Montserrat',sans-serif;
-  background:radial-gradient(1200px 700px at 20% -10%, rgba(216,176,76,.08), transparent 55%),
-             radial-gradient(900px 600px at 95% 0%, rgba(216,176,76,.06), transparent 50%),
-             var(--bg);
+  -webkit-text-size-adjust:100%;
+  background:
+    radial-gradient(1200px 700px at 20% -10%, rgba(216,176,76,.08), transparent 55%),
+    radial-gradient(900px 600px at 95% 0%, rgba(216,176,76,.06), transparent 50%),
+    var(--bg);
   color:var(--text);
 
   min-height:100vh;
@@ -85,8 +82,8 @@ body{
   overflow-x:hidden;
   -webkit-overflow-scrolling:touch;
 
-  /* ✅✅✅ запас снизу = sticky панель + safe area */
-  padding-bottom: calc(var(--sticky-h, 92px) + 18px + var(--tg-safe-area-inset-bottom, 0px));
+  /* ✅ запас снизу = sticky панель + safe area */
+  padding-bottom: calc(var(--sticky-h, 92px) + 18px + var(--tg-safe-area-inset-bottom, 0px) + env(safe-area-inset-bottom, 0px));
 }
 
 .header{
@@ -99,12 +96,38 @@ body{
   justify-content:center;
   position:relative;
   text-align:center;
-
-  /* ✅ тонкая золотая линия */
   border-bottom: 1px solid rgba(216,176,76,.75);
 }
-.header img{position:absolute;left:12px;width:110px; filter: drop-shadow(0 10px 18px rgba(0,0,0,.55));}
-.brand-title{font-family:'Lobster',cursive;font-size:36px;letter-spacing:.2px;}
+
+/* ✅ ЛОГО: меньше + полупрозрачная рамка */
+.logo-frame{
+  position:absolute;
+  left:12px;
+  width:64px;
+  height:64px;
+  border-radius:18px;
+  background:linear-gradient(180deg, rgba(255,255,255,.06), rgba(255,255,255,.02));
+  border:1px solid rgba(216,176,76,.30);
+  box-shadow:0 14px 26px rgba(0,0,0,.45), 0 0 0 1px rgba(216,176,76,.08) inset;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  overflow:hidden;
+}
+.logo-frame img{
+  width:44px;
+  height:44px;
+  object-fit:contain;
+  filter: drop-shadow(0 10px 18px rgba(0,0,0,.55));
+}
+
+/* ✅ Шапка: классический шрифт для названия */
+.brand-title{
+  font-family: "Times New Roman", Georgia, serif;
+  font-size:34px;
+  letter-spacing:.6px;
+  font-weight:700;
+}
 .brand-sub{font-weight:800;font-size:15px;opacity:.86;}
 
 .brand-phone{position:relative; z-index:50; pointer-events:auto;}
@@ -151,6 +174,28 @@ body{
 .burger span:nth-child(2){top:6.5px;}
 .burger span:nth-child(3){bottom:0;}
 
+/* ✅ геолокация под бургером */
+.geo-btn{
+  position:absolute;
+  right:18px;
+  top:58px;
+  width:34px;
+  height:34px;
+  border-radius:50%;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  cursor:pointer;
+  z-index:80;
+
+  color:var(--text);
+  background:linear-gradient(180deg, rgba(255,255,255,.06), rgba(255,255,255,.02));
+  border:1px solid rgba(216,176,76,.40);
+  box-shadow: 0 12px 24px rgba(0,0,0,.40), 0 0 0 1px rgba(216,176,76,.08) inset;
+  transition:.15s;
+}
+.geo-btn:active{transform:scale(.97);}
+
 /* поиск */
 .search-btn{
   position:absolute;
@@ -196,13 +241,8 @@ body{
   box-shadow: 0 12px 26px rgba(0,0,0,.42);
   color:var(--text);
 }
-body[data-theme="dark"] .btn{
-  background:linear-gradient(180deg, rgba(255,255,255,.05), rgba(255,255,255,.02));
-  color:var(--text);
-}
 .btn:active{transform:scale(.98);}
 
-/* ✅ Variant D: active = gold */
 .btn.active{
   background: linear-gradient(135deg, var(--gold), var(--gold-2));
   color:#141416;
@@ -223,10 +263,6 @@ body[data-theme="dark"] .btn{
   box-shadow: 0 12px 26px rgba(0,0,0,.42);
   outline:none;
   transition:.15s;
-  color:var(--text);
-}
-body[data-theme="dark"] .input{
-  background:linear-gradient(180deg, rgba(255,255,255,.05), rgba(255,255,255,.02));
   color:var(--text);
 }
 .input:focus{
@@ -258,12 +294,8 @@ body[data-theme="dark"] .input{
   box-shadow:
     0 16px 34px rgba(0,0,0,.55),
     0 0 0 1px rgba(216,176,76,.06) inset,
-    0 0 22px rgba(216,176,76,.06); /* ✅ мягкая подсветка */
+    0 0 22px rgba(216,176,76,.06);
   transition:.15s;
-  color:var(--text);
-}
-body[data-theme="dark"] .card{
-  background:linear-gradient(180deg, rgba(255,255,255,.06), rgba(255,255,255,.03));
   color:var(--text);
 }
 .card:active{transform:scale(.99);}
@@ -290,8 +322,6 @@ body[data-theme="dark"] .card{
   opacity:1;
   transform:scale(1.05);
   transition:.15s;
-
-  /* ✅ чтобы фото не терялись на тёмном фоне */
   filter: saturate(1.15) contrast(1.06) brightness(1.06) drop-shadow(0 12px 18px rgba(0,0,0,.55));
 }
 .card:active .img img{transform:scale(1.12);}
@@ -310,7 +340,7 @@ body[data-theme="dark"] .card{
 
 .price{
   font-weight:900;
-  color:var(--gold);     /* ✅ gold */
+  color:var(--gold);
   margin-top:6px;
   text-shadow: 0 10px 18px rgba(0,0,0,.45);
 }
@@ -341,17 +371,12 @@ body[data-theme="dark"] .card{
   border:1px solid rgba(216,176,76,.20);
   box-shadow: 0 16px 34px rgba(0,0,0,.55);
   color:var(--text);
-
   scroll-margin-bottom: calc(var(--sticky-h, 92px) + 22px);
-}
-body[data-theme="dark"] .cart{
-  background:linear-gradient(180deg, rgba(255,255,255,.06), rgba(255,255,255,.03));
-  color:var(--text);
 }
 
 textarea.input{height:90px;}
 
-/* ✅ кнопка заказа всегда видна над sticky-панелью */
+/* ✅ FIX: кнопка заказа НЕ sticky (чтобы не перекрывала оплату) */
 .order-btn{
   width:100%;
   padding:18px;
@@ -367,9 +392,8 @@ textarea.input{height:90px;}
   box-shadow: 0 16px 36px rgba(216,176,76,.16), 0 16px 34px rgba(0,0,0,.45);
   transition:.15s;
 
-  position: sticky;
-  bottom: calc(var(--sticky-h, 92px) + 12px);
-  z-index: 40;
+  position:relative;
+  z-index: 20;
 }
 .order-btn:active{transform:scale(.99);}
 
@@ -383,10 +407,6 @@ textarea.input{height:90px;}
   font-weight:800;
   border:1px solid rgba(216,176,76,.25);
   box-shadow: 0 22px 46px rgba(0,0,0,.60), 0 0 24px rgba(216,176,76,.10);
-  color:var(--text);
-}
-body[data-theme="dark"] .popup-box{
-  background:linear-gradient(180deg, rgba(255,255,255,.07), rgba(255,255,255,.03));
   color:var(--text);
 }
 
@@ -418,7 +438,6 @@ body[data-theme="dark"] .popup-box{
   transition:.15s;
   color:var(--text);
 }
-body[data-theme="dark"] .search-clear{background:linear-gradient(180deg, rgba(255,255,255,.06), rgba(255,255,255,.02)); color:var(--text);}
 .search-clear:active{transform:translateY(-50%) scale(.96);}
 
 .search-title{
@@ -433,7 +452,6 @@ body[data-theme="dark"] .search-clear{background:linear-gradient(180deg, rgba(25
 }
 .search-title.show{display:block;}
 
-/* ✅ gold highlight */
 mark{background:rgba(216,176,76,.22);padding:0 .12em;border-radius:6px;color:var(--text);}
 
 .quick-filters{
@@ -454,7 +472,6 @@ mark{background:rgba(216,176,76,.22);padding:0 .12em;border-radius:6px;color:var
   transition:.15s;
   color:var(--text);
 }
-body[data-theme="dark"] .qbtn{background:linear-gradient(180deg, rgba(255,255,255,.05), rgba(255,255,255,.02)); color:var(--text);}
 .qbtn:active{transform:scale(.98);}
 
 .popular-wrap{width:100%;padding:4px 12px 6px;}
@@ -472,7 +489,6 @@ body[data-theme="dark"] .qbtn{background:linear-gradient(180deg, rgba(255,255,25
   position:relative;
   color:var(--text);
 }
-body[data-theme="dark"] .pop-card{background:linear-gradient(180deg, rgba(255,255,255,.06), rgba(255,255,255,.03)); color:var(--text);}
 .pop-card:active{transform:scale(.99);}
 .pop-img{
   height:74px;
@@ -518,15 +534,11 @@ body[data-theme="dark"] .pop-card{background:linear-gradient(180deg, rgba(255,25
   position:fixed;
   left:0; right:0; bottom:0;
   padding:10px 12px;
-  background:rgba(11,11,12,.72);
+  background:rgba(7,7,8,.74);
   backdrop-filter: blur(12px);
   z-index:999;
   border-top:1px solid rgba(216,176,76,.26);
-  padding-bottom: calc(10px + var(--tg-safe-area-inset-bottom, 0px));
-}
-body[data-theme="dark"] .sticky-checkout{
-  background:rgba(7,7,8,.74);
-  border-top:1px solid rgba(216,176,76,.26);
+  padding-bottom: calc(10px + var(--tg-safe-area-inset-bottom, 0px) + env(safe-area-inset-bottom, 0px));
 }
 .sticky-inner{
   max-width:520px;
@@ -541,7 +553,6 @@ body[data-theme="dark"] .sticky-checkout{
   justify-content:space-between;
   gap:12px;
 }
-body[data-theme="dark"] .sticky-inner{background:linear-gradient(180deg, rgba(255,255,255,.06), rgba(255,255,255,.03));}
 .sticky-sum{font-weight:900;line-height:1.1;color:var(--text);}
 .sticky-sum small{display:block;font-weight:800;opacity:.78;margin-top:2px;}
 .sticky-btn{
@@ -571,7 +582,7 @@ body[data-theme="dark"] .sticky-inner{background:linear-gradient(180deg, rgba(25
 .menu-backdrop{
   position:fixed;
   inset:0;
-  background:rgba(0,0,0,.55);
+  background:rgba(0,0,0,.58);
   opacity:0;
   pointer-events:none;
   transition:.18s;
@@ -579,31 +590,27 @@ body[data-theme="dark"] .sticky-inner{background:linear-gradient(180deg, rgba(25
 }
 .menu-backdrop.show{opacity:1;pointer-events:auto;}
 
+/* ✅ FIX: меню НЕ прозрачное — текст читается */
 .menu-sheet{
   position:fixed;
   left:0; right:0;
   bottom:-100%;
-  background:linear-gradient(180deg, rgba(255,255,255,.06), rgba(255,255,255,.03));
+  background:rgba(10,10,11,.96);
   border-top-left-radius:22px;
   border-top-right-radius:22px;
   border:1px solid rgba(216,176,76,.22);
-  box-shadow:0 22px 46px rgba(0,0,0,.62);
+  box-shadow:0 22px 46px rgba(0,0,0,.70);
   transition:.22s;
   z-index:1010;
   padding:10px 12px 14px;
-  padding-bottom: calc(14px + var(--tg-safe-area-inset-bottom, 0px));
-}
-body[data-theme="dark"] .menu-sheet{
-  background:linear-gradient(180deg, rgba(255,255,255,.06), rgba(255,255,255,.03));
-  border-color:rgba(216,176,76,.22);
+  padding-bottom: calc(14px + var(--tg-safe-area-inset-bottom, 0px) + env(safe-area-inset-bottom, 0px));
 }
 .menu-sheet.show{bottom:0;}
 .menu-handle{
   width:44px;height:5px;border-radius:999px;
-  background:rgba(216,176,76,.28);
+  background:rgba(216,176,76,.32);
   margin:6px auto 10px;
 }
-body[data-theme="dark"] .menu-handle{background:rgba(216,176,76,.28);}
 .menu-head{
   display:flex;align-items:center;justify-content:space-between;
   padding:2px 4px 10px;
@@ -615,9 +622,8 @@ body[data-theme="dark"] .menu-handle{background:rgba(216,176,76,.28);}
   cursor:pointer;
   font-size:22px;
   line-height:1;
-  color:rgba(244,242,234,.80);
+  color:rgba(244,242,234,.86);
 }
-body[data-theme="dark"] .menu-close{color:rgba(244,242,234,.80);}
 
 .menu-list{display:flex;flex-direction:column;gap:8px;}
 .menu-item{
@@ -625,14 +631,9 @@ body[data-theme="dark"] .menu-close{color:rgba(244,242,234,.80);}
   padding:12px 12px;
   border-radius:16px;
   border:1px solid rgba(216,176,76,.18);
-  background:rgba(0,0,0,.16);
+  background:rgba(255,255,255,.04);
   cursor:pointer;
   text-decoration:none;
-  color:var(--text);
-}
-body[data-theme="dark"] .menu-item{
-  border-color:rgba(216,176,76,.18);
-  background:rgba(0,0,0,.18);
   color:var(--text);
 }
 .menu-left{display:flex;align-items:center;gap:10px;min-width:0;}
@@ -642,7 +643,6 @@ body[data-theme="dark"] .menu-item{
   background:rgba(216,176,76,.14);
   flex:0 0 auto;
 }
-body[data-theme="dark"] .menu-ic{background:rgba(216,176,76,.14);}
 .menu-txt{display:flex;flex-direction:column;min-width:0;}
 .menu-name{font-weight:900;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
 .menu-sub{font-size:12px;opacity:.78;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;margin-top:2px;}
@@ -652,7 +652,7 @@ body[data-theme="dark"] .menu-ic{background:rgba(216,176,76,.14);}
 .about-modal{
   position:fixed;
   inset:0;
-  background:rgba(0,0,0,.55);
+  background:rgba(0,0,0,.60);
   display:none;
   z-index:1100;
   padding:18px 14px;
@@ -661,16 +661,11 @@ body[data-theme="dark"] .menu-ic{background:rgba(216,176,76,.14);}
 .about-card{
   max-width:680px;
   margin:0 auto;
-  background:linear-gradient(180deg, rgba(255,255,255,.06), rgba(255,255,255,.03));
+  background:rgba(10,10,11,.96);
   border:1px solid rgba(216,176,76,.22);
   border-radius:22px;
-  box-shadow:0 22px 46px rgba(0,0,0,.62);
+  box-shadow:0 22px 46px rgba(0,0,0,.70);
   padding:14px 14px 12px;
-  color:var(--text);
-}
-body[data-theme="dark"] .about-card{
-  background:linear-gradient(180deg, rgba(255,255,255,.06), rgba(255,255,255,.03));
-  border-color:rgba(216,176,76,.22);
   color:var(--text);
 }
 .about-head{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-bottom:6px;}
@@ -680,21 +675,27 @@ body[data-theme="dark"] .about-card{
 </style>
 </head>
 
-<body>
+<body data-theme="dark">
 
 <div class="header">
-  <img src="logo.png" onerror="this.src='logo.png'">
+  <div class="logo-frame">
+    <img src="logo.png" onerror="this.src='logo.png'">
+  </div>
+
   <div>
     <div class="brand-title">ORZU-DIL</div>
-    <div class="brand-sub">Uzbek national cuisine</div>
+    <div class="brand-sub">Milliy Taomlar</div>
     <div class="brand-phone">
-      <a href="tel:+998905389999" onclick="callPhone(event)">+998 90 538 99 99</a>
+      <a href="tel:+998906065606" onclick="callPhone(event)">+998 90 606 56 06</a>
     </div>
   </div>
 
   <div class="menu-btn" onclick="openTopMenu()" title="Меню">
     <div class="burger"><span></span><span></span><span></span></div>
   </div>
+
+  <!-- ✅ геолокация под бургером -->
+  <div class="geo-btn" onclick="requestGeo()" title="Геолокация">📍</div>
 
   <div class="search-btn" onclick="toggleSearch()">🔍</div>
 </div>
@@ -721,7 +722,7 @@ body[data-theme="dark"] .about-card{
     </div>
 
     <div id="reviewWidgetWrap" style="display:none; padding:6px 4px 10px;">
-      <div style="border:1px solid var(--stroke); border-radius:16px; overflow:hidden; background:#fff; padding:10px; display:flex; justify-content:center;">
+      <div style="border:1px solid rgba(216,176,76,.22); border-radius:16px; overflow:hidden; background:#fff; padding:10px; display:flex; justify-content:center;">
         <iframe
           src="https://yandex.ru/sprav/widget/rating-badge/11046753996?type=rating"
           width="150"
@@ -730,7 +731,7 @@ body[data-theme="dark"] .about-card{
           style="border:0; display:block;"
         ></iframe>
       </div>
-      <div style="text-align:center; font-size:12px; opacity:.75; margin-top:6px;">
+      <div style="text-align:center; font-size:12px; opacity:.80; margin-top:6px; color:var(--text);">
         Если виджет не открылся в Telegram — откройте отзывы через кнопку ниже.
       </div>
       <div style="display:flex; justify-content:center; margin-top:8px;">
@@ -738,12 +739,13 @@ body[data-theme="dark"] .about-card{
       </div>
     </div>
 
-    <a class="menu-item" href="tel:+998905389999" onclick="closeTopMenu()">
+    <!-- ✅ телефон обновлён -->
+    <a class="menu-item" href="tel:+998906065606" onclick="closeTopMenu(); callPhone(event)">
       <div class="menu-left">
         <div class="menu-ic">📞</div>
         <div class="menu-txt">
           <div class="menu-name">Позвонить</div>
-          <div class="menu-sub">+998 90 538 99 99</div>
+          <div class="menu-sub">+998 90 606 56 06</div>
         </div>
       </div>
       <div class="menu-right">›</div>
@@ -764,16 +766,7 @@ body[data-theme="dark"] .about-card{
       <div class="menu-right">›</div>
     </a>
 
-    <div class="menu-item" onclick="toggleThemeFromMenu()" role="button">
-      <div class="menu-left">
-        <div class="menu-ic">🌓</div>
-        <div class="menu-txt">
-          <div class="menu-name">Тема</div>
-          <div class="menu-sub" id="themeMenuSub">Светлая</div>
-        </div>
-      </div>
-      <div class="menu-right" id="themeMenuRight">Сменить</div>
-    </div>
+    <!-- ✅ УБРАН выбор темы -->
 
     <div class="menu-item" onclick="openAbout()" role="button">
       <div class="menu-left">
@@ -873,8 +866,9 @@ function setAppHeight(){
       if (Telegram.WebApp.viewportHeight) {
         document.documentElement.style.setProperty('--tg-viewport-height', Telegram.WebApp.viewportHeight + 'px');
       }
-      if (Telegram.WebApp.safeAreaInset && Telegram.WebApp.safeAreaInset.bottom != null){
-        document.documentElement.style.setProperty('--tg-safe-area-inset-bottom', Telegram.WebApp.safeAreaInset.bottom + 'px');
+      const safeBottom = Telegram.WebApp.safeAreaInset?.bottom;
+      if (safeBottom != null){
+        document.documentElement.style.setProperty('--tg-safe-area-inset-bottom', safeBottom + 'px');
       }
     }
   }catch(_){}
@@ -892,14 +886,22 @@ function refreshLayout(){
   setAppHeight();
   setStickyHeight();
 }
-
 refreshLayout();
 window.addEventListener('resize', refreshLayout);
 try{ Telegram.WebApp.onEvent('viewportChanged', refreshLayout); } catch(_){}
 
+/* ✅ фиксированный Premium dark */
+(function initTheme(){
+  document.body.setAttribute('data-theme','dark');
+  try{
+    Telegram.WebApp.setHeaderColor?.('#070708');
+    Telegram.WebApp.setBackgroundColor?.('#070708');
+  }catch(_){}
+})();
+
 function callPhone(e){
   try{ e.preventDefault(); e.stopPropagation(); }catch(_){}
-  const tel = "tel:+998905389999";
+  const tel = "tel:+998906065606";
   try{
     if (window.Telegram && Telegram.WebApp && typeof Telegram.WebApp.openLink === "function"){
       Telegram.WebApp.openLink(tel);
@@ -907,6 +909,41 @@ function callPhone(e){
     }
   }catch(_){}
   try{ window.location.href = tel; }catch(_){}
+}
+
+/* ✅ геолокация (для iPhone/Android) */
+function requestGeo(){
+  closeTopMenu();
+  try{
+    if (window.Telegram && Telegram.WebApp && typeof Telegram.WebApp.requestLocation === 'function'){
+      Telegram.WebApp.requestLocation((loc)=>{
+        if(!loc){ alert('Геолокация не выдана'); return; }
+        const lat = loc.latitude, lon = loc.longitude;
+        const url = `https://yandex.ru/maps/?ll=${lon}%2C${lat}&z=16`;
+        try{ Telegram.WebApp.openLink(url); }catch(_){ window.open(url,'_blank'); }
+      });
+      return;
+    }
+  }catch(_){}
+
+  if(!navigator.geolocation){
+    alert('Геолокация недоступна');
+    return;
+  }
+  navigator.geolocation.getCurrentPosition((pos)=>{
+    const lat = pos.coords.latitude;
+    const lon = pos.coords.longitude;
+    const url = `https://yandex.ru/maps/?ll=${lon}%2C${lat}&z=16`;
+    try{
+      if (window.Telegram && Telegram.WebApp && typeof Telegram.WebApp.openLink === "function"){
+        Telegram.WebApp.openLink(url);
+        return;
+      }
+    }catch(_){}
+    window.open(url,'_blank');
+  }, ()=>{
+    alert('Не удалось получить геолокацию');
+  }, {enableHighAccuracy:true, timeout:8000, maximumAge:0});
 }
 
 /* меню */
@@ -949,26 +986,6 @@ function openInstagram(e){
   window.open(url, "_blank");
 }
 
-function applyTheme(theme){
-  document.body.setAttribute('data-theme', theme);
-  localStorage.setItem('orzu_dil_theme', theme);
-
-  const sub = document.getElementById('themeMenuSub');
-  if(sub) sub.innerText = (theme === 'dark') ? 'Тёмная' : 'Светлая';
-
-  try{
-    if (window.Telegram && Telegram.WebApp){
-      Telegram.WebApp.setHeaderColor?.(theme === 'dark' ? '#070708' : '#0B0B0C');
-      Telegram.WebApp.setBackgroundColor?.(theme === 'dark' ? '#070708' : '#0B0B0C');
-    }
-  }catch(_){}
-}
-function toggleThemeFromMenu(){
-  const cur = document.body.getAttribute('data-theme') || 'dark';
-  const next = (cur === 'dark') ? 'light' : 'dark';
-  applyTheme(next);
-}
-
 function openAbout(){
   closeTopMenu();
   document.getElementById('aboutModal').classList.add('show');
@@ -980,22 +997,12 @@ function aboutBackdropClick(e){
   if(e.target && e.target.id === 'aboutModal') closeAbout();
 }
 
-(function initTheme(){
-  /* ✅ Premium: по умолчанию ставим dark, если не сохранено */
-  const saved = localStorage.getItem('orzu_dil_theme');
-  if(saved === 'dark' || saved === 'light'){
-    applyTheme(saved);
-  }else{
-    applyTheme('dark');
-  }
-})();
-
 const tgUser = Telegram.WebApp.initDataUnsafe?.user || {};
 const tg_username = tgUser.username || "";
 const tg_first_name = tgUser.first_name || "";
 const tg_id = tgUser.id || "";
 
-let lang='ru',category='salads',type='delivery',payment='cash',cart={};
+let lang='ru',category='breakfast',type='delivery',payment='cash',cart={};
 
 const TEXT={
   ru:{delivery:'🚚 Доставка',pickup:'🏃 Самовывоз',address:'📍 Адрес доставки',phone:'📞 Телефон',cart:'🛒 Корзина',order:'Оформить заказ',comment:'✍️ Комментарий к заказу',cash:'💵 Наличные',click:'💳 CLICK',results:'Результаты поиска',popular:'🔥 Популярное',empty:'Корзина пустая'},
@@ -1004,59 +1011,125 @@ const TEXT={
 };
 
 const CATS={
-  ru:{salads:'🥗 Салаты',sauce:'🥣 Соус',first:'🍜 Первые блюда',hot:'🍲 Горячие блюда',garnish:'🍟 Гарнир',drinks:'🥤 Напитки'},
-  uz:{salads:'🥗 Salatlar',sauce:'🥣 Souslar',first:'🍜 Birinchi taomlar',hot:'🍲 Issiq taomlar',garnish:'🍟 Garnir',drinks:'🥤 Ichimliklar'},
-  en:{salads:'🥗 Salads',sauce:'🥣 Sauces',first:'🍜 First dishes',hot:'🍲 Hot dishes',garnish:'🍟 Side dishes',drinks:'🥤 Drinks'}
+  ru:{
+    breakfast:'🍳 Завтрак',
+    first:'🍜 Первые блюда',
+    second:'🍲 Вторые блюда',
+    shashlik:'🔥 Шашлык',
+    fish:'🐟 Рыбные блюда',
+    salad:'🥗 Салат',
+    bread:'🥖 Хлеб',
+    drinks:'🥤 Напитки',
+    preorder:'📦 Под заказ'
+  },
+  uz:{
+    breakfast:'🍳 Nonushta',
+    first:'🍜 Birinchi taomlar',
+    second:'🍲 Ikkinchi taomlar',
+    shashlik:'🔥 Shashlik',
+    fish:'🐟 Baliq taomlari',
+    salad:'🥗 Salat',
+    bread:'🥖 Non',
+    drinks:'🥤 Ichimliklar',
+    preorder:'📦 Buyurtma bilan'
+  },
+  en:{
+    breakfast:'🍳 Breakfast',
+    first:'🍜 First dishes',
+    second:'🍲 Main dishes',
+    shashlik:'🔥 Shashlik',
+    fish:'🐟 Fish dishes',
+    salad:'🥗 Salads',
+    bread:'🥖 Bread',
+    drinks:'🥤 Drinks',
+    preorder:'📦 Pre-order'
+  }
 };
 
+/* ✅✅✅ НОВОЕ МЕНЮ (заменено полностью) */
 const MENU = {
-  salads:[
-    {id:'vesenniy', p:25000, img:'images/vesenniy.png', n:{ru:'Весенний', uz:'Bahorgi salat', en:'Spring salad'}},
-    {id:'osenniy', p:30000, img:'images/osenniy.png', n:{ru:'Осенний', uz:'Kuzgi salat', en:'Autumn salad'}},
-    {id:'grecheskiy', p:40000, img:'images/grecheskiy.png', n:{ru:'Греческий', uz:'Grecheskiy salat', en:'Greek salad'}},
-    {id:'vecho', p:45000, img:'images/vecho.png', n:{ru:'Вечо', uz:'Vecho salat', en:'Vecho salad'}},
-    {id:'krabovyy', p:40000, img:'images/krabovyy.png', n:{ru:'Крабовый', uz:'Krab salati', en:'Crab salad'}},
-    {id:'elitnyy', p:45000, img:'images/elitnyy.png', n:{ru:'Элитный', uz:'Elit salat', en:'Premium salad'}},
-    {id:'smak', p:40000, img:'images/smak.png', n:{ru:'Смак', uz:'Smak salat', en:'Smak salad'}},
-    {id:'rukolla', p:45000, img:'images/salat_s_rukolloy.png', n:{ru:'Салат с руколлой', uz:'Rukola salati', en:'Arugula salad'}},
-    {id:'vinegret', p:40000, img:'images/vinegret.png', n:{ru:'Винегрет', uz:'Vinegret', en:'Vinaigrette'}},
-    {id:'tsezar', p:45000, img:'images/tsezar_klassicheskiy.png', n:{ru:'Цезарь классический', uz:'Sezar klassik', en:'Caesar classic'}},
-    {id:'olivye', p:40000, img:'images/olive.png', n:{ru:'Оливье', uz:'Olivye', en:'Olivier'}},
-    {id:'svezhiy', p:25000, img:'images/svezhiy.png', n:{ru:'Свежий', uz:'Yangi salat', en:'Fresh salad'}}
-  ],
-  sauce:[
-    {id:'chalop', p:10000, img:'images/chalop.png', n:{ru:'Чалоп', uz:'Chalop', en:'Chalop'}},
-    {id:'tomato_sauce', p:5000, img:'images/tomato_sauce.png', n:{ru:'Соус из помидоров', uz:'Pomidor sousi', en:'Tomato sauce'}}
+  breakfast:[
+    {id:'pirozhki_myaso_1', p:7000,  img:'images/pirozhki_myaso_1.png', n:{ru:'Пирожки с мясом 1шт', uz:'Pirojki go‘shtli 1 dona', en:'Meat pie (1 pc)'}},
+    {id:'pirozhki_kartoshka_1', p:5000, img:'images/pirozhki_kartoshka_1.png', n:{ru:'Пирожки с картошкой 1шт', uz:'Pirojki kartoshkali 1 dona', en:'Potato pie (1 pc)'}},
+    {id:'sosiska_v_teste_1', p:7000, img:'images/sosiska_v_teste_1.png', n:{ru:'Сосиска в тесте 1шт', uz:'Sosiska xamirda 1 dona', en:'Sausage in dough (1 pc)'}},
+    {id:'sosiski_zharenye_1', p:5000, img:'images/sosiski_zharenye_1.png', n:{ru:'Сосиски жаренные 1шт', uz:'Qovurilgan sosiska 1 dona', en:'Fried sausage (1 pc)'}},
+    {id:'yaytso_zharenoe_1', p:5000, img:'images/yaytso_zharenoe_1.png', n:{ru:'Яйцо жаренное 1шт', uz:'Qovurilgan tuxum 1 dona', en:'Fried egg (1 pc)'}},
+    {id:'yaytso_varenoe_1', p:5000, img:'images/yaytso_varenoe_1.png', n:{ru:'Яйцо вареное 1шт', uz:'Qaynatilgan tuxum 1 dona', en:'Boiled egg (1 pc)'}}
   ],
   first:[
-    {id:'shurpa', p:40000, img:'images/shurpa.png', n:{ru:'Шурпа', uz:"Sho'rva", en:'Shurpa'}},
-    {id:'pelmeni', p:40000, img:'images/pelmeni.png', n:{ru:'Пельмени', uz:'Chuchvara', en:'Dumplings'}},
-    {id:'lagman', p:40000, img:'images/lagman.png', n:{ru:'Лагман', uz:"Lag'mon", en:'Lagman'}},
-    {id:'bulon', p:20000, img:'images/bulon.png', n:{ru:'Суп бульон', uz:"Bulyon sho'rva", en:'Broth soup'}}
+    {id:'shurpa', p:45000, img:'images/shurpa.png', n:{ru:'Шурпа', uz:"Sho'rva", en:'Shurpa'}},
+    {id:'nahut_shurpo', p:50000, img:'images/nahut_shurpo.png', n:{ru:'Нахут Шурпо', uz:"No'xat sho'rva", en:'Chickpea shurpa'}},
+    {id:'lagman', p:45000, img:'images/lagman.png', n:{ru:'Лагман', uz:"Lag'mon", en:'Lagman'}},
+    {id:'pelmeni_domashnie', p:45000, img:'images/pelmeni_domashnie.png', n:{ru:'Пельмени Домашние', uz:'Uy chuchvara', en:'Homemade dumplings'}}
   ],
-  hot:[
-    {id:'manty1', p:10000, img:'images/manty1.png', n:{ru:'Манты 1шт', uz:'Manti 1 dona', en:'Manti (1 pc)'}},
-    {id:'plov05', p:50000, img:'images/plov05.png', n:{ru:'Плов 0.5', uz:'Osh 0.5', en:'Plov 0.5'}},
-    {id:'halisa', p:80000, img:'images/halisa.png', n:{ru:'Халиса', uz:'Halisa', en:'Halisa'}},
-    {id:'kurutob', p:80000, img:'images/kurutob.png', n:{ru:'Курутоб', uz:'Qurutob', en:'Qurutob'}},
-    {id:'fried_lagman', p:50000, img:'images/fried_lagman.png', n:{ru:'Жаренный Лагман', uz:"Qovurilgan lag'mon", en:'Fried lagman'}}
+  second:[
+    {id:'manty_1', p:10000, img:'images/manty_1.png', n:{ru:'Манты 1шт', uz:'Manti 1 dona', en:'Manti (1 pc)'}},
+    {id:'grechka_s_kotletoy', p:45000, img:'images/grechka_s_kotletoy.png', n:{ru:'Гречка с котлетой', uz:"Grechka kotlet bilan", en:'Buckwheat with cutlet'}},
+    {id:'tuy_kabob', p:50000, img:'images/tuy_kabob.png', n:{ru:'Туй Кабоб', uz:"To'y kabob", en:'Tuy kabob'}},
+    {id:'golubtsy', p:45000, img:'images/golubtsy.png', n:{ru:'Голубцы', uz:'Golubtsi', en:'Cabbage rolls'}},
+    {id:'plov_05', p:50000, img:'images/plov_05.png', n:{ru:'Плов 0.5', uz:'Osh 0.5', en:'Plov 0.5'}},
+    {id:'zhiz_biz_1kg', p:220000, img:'images/zhiz_biz_1kg.png', n:{ru:'Жиз-Биз 1кг', uz:'Jiz-biz 1 kg', en:'Jiz-biz 1 kg'}},
+    {id:'hasib_1kg', p:160000, img:'images/hasib_1kg.png', n:{ru:'Хасиб 1кг', uz:'Hasib 1 kg', en:'Hasib 1 kg'}}
   ],
-  garnish:[
-    {id:'fri', p:20000, img:'images/fri.png', n:{ru:'Фри', uz:'Fri', en:'French fries'}}
+  shashlik:[
+    {id:'shashlik_molotyy', p:28000, img:'images/shashlik_molotyy.png', n:{ru:'Шашлык Молотый', uz:'Qiyma shashlik', en:'Minced shashlik'}},
+    {id:'kuskovoy_govyadina', p:30000, img:'images/kuskovoy_govyadina.png', n:{ru:'Кусковой Говядина', uz:"Mol go'shti shashlik", en:'Beef shashlik'}},
+    {id:'barani_rebryshki', p:35000, img:'images/barani_rebryshki.png', n:{ru:'Бараньи Рёбрышки', uz:"Qo'y qovurg'a", en:'Lamb ribs'}}
+  ],
+  fish:[
+    {id:'sazan_1kg', p:175000, img:'images/sazan_1kg.png', n:{ru:'Сазан 1кг', uz:'Sazan 1 kg', en:'Carp 1 kg'}},
+    {id:'belyy_amur_1kg', p:175000, img:'images/belyy_amur_1kg.png', n:{ru:'Белый Амур 1кг', uz:'Oq amur 1 kg', en:'Grass carp 1 kg'}}
+  ],
+  salad:[
+    {id:'svezhiy', p:10000, img:'images/svezhiy.png', n:{ru:'Свежий', uz:'Yangi salat', en:'Fresh salad'}},
+    {id:'chakka_s_zelenyu', p:5000, img:'images/chakka_s_zelenyu.png', n:{ru:'Чакка с зеленью', uz:"Chakka ko'kat bilan", en:'Chakka with herbs'}},
+    {id:'solenya', p:5000, img:'images/solenya.png', n:{ru:'Соленья', uz:'Tuzlama', en:'Pickles'}},
+    {id:'redka_s_chakkoy', p:5000, img:'images/redka_s_chakkoy.png', n:{ru:'Редька с Чаккой', uz:"Turp chakka bilan", en:'Radish with chakka'}}
+  ],
+  bread:[
+    {id:'lepeshka_domashnyaya', p:8000, img:'images/lepeshka_domashnyaya.png', n:{ru:'Лепешка Домашняя', uz:'Uy noni', en:'Homemade bread'}}
   ],
   drinks:[
-    {id:'cola15', p:20000, img:'images/cola15.jpg', n:{ru:'Coca Cola 1.5L', uz:'Coca Cola 1.5L', en:'Coca Cola 1.5L'}},
-    {id:'fanta15', p:20000, img:'images/fanta15.jpg', n:{ru:'Fanta 1.5L', uz:'Fanta 1.5L', en:'Fanta 1.5L'}},
-    {id:'pepsi15', p:20000, img:'images/pepsi15.jpg', n:{ru:'Pepsi 1.5L', uz:'Pepsi 1.5L', en:'Pepsi 1.5L'}},
-    {id:'juice1', p:20000, img:'images/juice1.png', n:{ru:'Сок в ассортименте 1L', uz:'Sharbat (assort) 1L', en:'Juice assorted 1L'}},
-    {id:'chertoq15', p:8000, img:'images/chertoq15.png', n:{ru:'Вода газ / без газа Chertoq 1.5L', uz:'Chertoq suv 1.5L (gazli / gazsiz)', en:'Chertoq water 1.5L (sparkling / still)'}},
-    {id:'tea', p:5000, img:'images/tea.png', n:{ru:'Чай зелёный / чёрный', uz:'Choy (yashil / qora)', en:'Tea (green / black)'}},
-    {id:'tea_lemon', p:15000, img:'images/tea_lemon.png', n:{ru:'Чай с лимоном', uz:'Limonli choy', en:'Tea with lemon'}},
-    {id:'coffee', p:10000, img:'images/coffee.png', n:{ru:'Кофе растворимый чёрный', uz:'Qora kofe (eritma)', en:'Instant black coffee'}}
+    {id:'chai_chernyy_zelenyy', p:5000, img:'images/chai_chernyy_zelenyy.png', n:{ru:'Чай Черный/Зелёный', uz:'Choy qora/yashil', en:'Tea black/green'}},
+    {id:'chai_s_limonom', p:15000, img:'images/chai_s_limonom.png', n:{ru:'Чай с лимоном', uz:'Limonli choy', en:'Tea with lemon'}},
+    {id:'kofe_chernyy', p:8000, img:'images/kofe_chernyy.png', n:{ru:'Кофе Чёрный', uz:'Qora kofe', en:'Black coffee'}},
+    {id:'kofe_3_1', p:8000, img:'images/kofe_3_1.png', n:{ru:'Кофе 3/1', uz:'Kofe 3/1', en:'Coffee 3-in-1'}},
+    {id:'kakao', p:8000, img:'images/kakao.png', n:{ru:'Какао', uz:'Kakao', en:'Cocoa'}},
+    {id:'kefir_200ml', p:5000, img:'images/kefir_200ml.png', n:{ru:'Кефир 200мл', uz:'Kefir 200 ml', en:'Kefir 200 ml'}},
+
+    {id:'cola_025', p:7000, img:'images/cola_025.png', n:{ru:'Coca Cola 0.25L', uz:'Coca Cola 0.25L', en:'Coca Cola 0.25L'}},
+    {id:'fanta_025', p:7000, img:'images/fanta_025.png', n:{ru:'Fanta 0.25L', uz:'Fanta 0.25L', en:'Fanta 0.25L'}},
+    {id:'cola_05', p:8000, img:'images/cola_05.png', n:{ru:'Coca Cola 0.5L', uz:'Coca Cola 0.5L', en:'Coca Cola 0.5L'}},
+    {id:'fanta_05', p:8000, img:'images/fanta_05.png', n:{ru:'Fanta 0.5L', uz:'Fanta 0.5L', en:'Fanta 0.5L'}},
+    {id:'cola_1', p:15000, img:'images/cola_1.png', n:{ru:'Coca Cola 1L', uz:'Coca Cola 1L', en:'Coca Cola 1L'}},
+    {id:'fanta_1', p:15000, img:'images/fanta_1.png', n:{ru:'Fanta 1L', uz:'Fanta 1L', en:'Fanta 1L'}},
+    {id:'cola_15', p:20000, img:'images/cola_15.png', n:{ru:'Coca Cola 1.5L', uz:'Coca Cola 1.5L', en:'Coca Cola 1.5L'}},
+    {id:'fanta_15', p:20000, img:'images/fanta_15.png', n:{ru:'Fanta 1.5L', uz:'Fanta 1.5L', en:'Fanta 1.5L'}},
+
+    {id:'borjomi_05', p:18000, img:'images/borjomi_05.png', n:{ru:'Borjomi 0.5L', uz:'Borjomi 0.5L', en:'Borjomi 0.5L'}},
+    {id:'chortoq_05', p:18000, img:'images/chortoq_05.png', n:{ru:'Chortoq 0.5L', uz:'Chortoq 0.5L', en:'Chortoq 0.5L'}},
+
+    {id:'sok_bliss_1l', p:15000, img:'images/sok_bliss_1l.png', n:{ru:'Сок Bliss 1L', uz:'Bliss sharbat 1L', en:'Bliss juice 1L'}},
+    {id:'sok_sochnaya_dolina_1l', p:15000, img:'images/sok_sochnaya_dolina_1l.png', n:{ru:'Сок Сочная Долина 1L', uz:'Sochnaya Dolina sharbat 1L', en:'Sochnaya Dolina juice 1L'}},
+
+    {id:'berg_05', p:5000, img:'images/berg_05.png', n:{ru:'Минеральная вода Berg 0.5L', uz:'Berg suv 0.5L', en:'Berg water 0.5L'}},
+    {id:'berg_1', p:8000, img:'images/berg_1.png', n:{ru:'Минеральная вода Berg 1L', uz:'Berg suv 1L', en:'Berg water 1L'}},
+    {id:'samarkand_15', p:10000, img:'images/samarkand_15.png', n:{ru:'Газированная вода SAMARKAND 1.5L', uz:'SAMARKAND gazli suv 1.5L', en:'SAMARKAND sparkling 1.5L'}},
+
+    {id:'natakhtari_tarkhun_05', p:15000, img:'images/natakhtari_tarkhun_05.png', n:{ru:'Лимонад Натахтари Тархун 0.5L', uz:'Natakhtari Tarxun 0.5L', en:'Natakhtari Tarragon 0.5L'}},
+    {id:'natakhtari_grusha_05', p:15000, img:'images/natakhtari_grusha_05.png', n:{ru:'Лимонад Натахтари Груша 0.5L', uz:'Natakhtari Nok 0.5L', en:'Natakhtari Pear 0.5L'}},
+    {id:'natakhtari_saperavi_05', p:15000, img:'images/natakhtari_saperavi_05.png', n:{ru:'Лимонад Натахтари Саперави 0.5L', uz:'Natakhtari Saperavi 0.5L', en:'Natakhtari Saperavi 0.5L'}},
+    {id:'natakhtari_krem_soda_05', p:15000, img:'images/natakhtari_krem_soda_05.png', n:{ru:'Лимонад Натахтари Крем Сода 0.5L', uz:'Natakhtari Krem-soda 0.5L', en:'Natakhtari Cream soda 0.5L'}}
+  ],
+  preorder:[
+    {id:'olive_1kg', p:180000, img:'images/olive_1kg.png', n:{ru:'Салат Оливье 1кг', uz:'Olivye salat 1 kg', en:'Olivier salad 1 kg'}},
+    {id:'bichaki_s_travoy_1', p:10000, img:'images/bichaki_s_travoy_1.png', n:{ru:'Бичаки с травой 1шт', uz:"Bichaki ko'katli 1 dona", en:'Bichaki with herbs (1 pc)'}},
+    {id:'somsa', p:12000, img:'images/somsa.png', n:{ru:'Сомса', uz:'Somsa', en:'Somsa'}}
   ]
 };
 
-const POPULAR = ['plov05','manty1','shurpa','tsezar'];
+/* Популярное (выбрал самые ходовые) */
+const POPULAR = ['plov_05','shurpa','lagman','tuy_kabob'];
 
 const ITEM_INDEX = {};
 for (const c in MENU){ MENU[c].forEach(it => { ITEM_INDEX[it.id] = it; }); }
@@ -1182,7 +1255,7 @@ function popChg(e,id,delta){
 }
 
 function renderQuickFilters(){
-  const keys = ['salads','hot','first','drinks'];
+  const keys = ['breakfast','second','first','drinks'];
   quickFilters.innerHTML = '';
   keys.forEach(k=>{
     if(!MENU[k]) return;
