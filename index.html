@@ -330,16 +330,20 @@ body{
   border:1px solid rgba(216,176,76,.12);
   overflow:hidden;
 }
+
+/* ✅✅ Закругляем фото в иконках */
 .img img{
   max-width:125px;
   max-height:125px;
   width:auto;
   height:auto;
-  object-fit:contain;
+  object-fit:cover;
   opacity:1;
   transform:scale(1.05);
   transition:.15s;
+  border-radius:18px;               /* ✅ закругление */
   filter: saturate(1.15) contrast(1.06) brightness(1.06) drop-shadow(0 12px 18px rgba(0,0,0,.55));
+  cursor: zoom-in;                  /* ✅ подсказка, что можно увеличить */
 }
 .card:active .img img{transform:scale(1.12);}
 
@@ -565,7 +569,15 @@ mark{background:rgba(216,176,76,.22);padding:0 .12em;border-radius:6px;color:var
   background:radial-gradient(180px 90px at 50% 60%, rgba(216,176,76,.10), transparent 60%), rgba(0,0,0,.18);
   border:1px solid rgba(216,176,76,.12);
 }
-.pop-img img{width:100%;height:100%;object-fit:cover; filter:saturate(1.15) contrast(1.06) brightness(1.06);}
+/* ✅ закругляем фото в популярных */
+.pop-img img{
+  width:100%;
+  height:100%;
+  object-fit:cover;
+  border-radius:18px;   /* ✅ */
+  filter:saturate(1.15) contrast(1.06) brightness(1.06);
+  cursor: zoom-in;      /* ✅ */
+}
 .pop-name{font-weight:900;margin-top:8px;}
 .pop-price{font-weight:900;color:var(--gold);margin-top:4px;}
 .pop-badge{position:absolute;left:10px;top:10px;font-size:18px;pointer-events:none;}
@@ -593,6 +605,67 @@ mark{background:rgba(216,176,76,.22);padding:0 .12em;border-radius:6px;color:var
 }
 .pop-counter button:active{transform:scale(.96);}
 .pop-counter span{font-weight:900; min-width:18px; text-align:center;}
+
+/* ✅ Фото-просмотр (увеличение) */
+.photo-viewer{
+  position:fixed;
+  inset:0;
+  background:rgba(0,0,0,.78);
+  opacity:0;
+  pointer-events:none;
+  transition:.18s;
+  z-index:2000;
+  display:flex;
+  flex-direction:column;
+}
+.photo-viewer.show{opacity:1;pointer-events:auto;}
+
+.photo-topbar{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  padding:12px;
+  padding-top: calc(12px + var(--tg-safe-area-inset-top, 0px) + env(safe-area-inset-top, 0px));
+}
+.photo-hint{
+  font-weight:900;
+  font-size:12px;
+  opacity:.85;
+}
+.photo-close{
+  width:42px;height:42px;
+  border-radius:14px;
+  border:1px solid rgba(216,176,76,.35);
+  background:rgba(255,255,255,.06);
+  color:var(--text);
+  font-size:22px;
+  font-weight:900;
+  cursor:pointer;
+}
+.photo-close:active{transform:scale(.98);}
+
+.photo-stage{
+  flex:1;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  padding:12px 12px 18px;
+  padding-bottom: calc(18px + var(--tg-safe-area-inset-bottom, 0px) + env(safe-area-inset-bottom, 0px));
+  overflow:hidden;
+}
+
+.photo-zoom{
+  touch-action: none; /* ✅ иначе pinch/drag будет прокручиваться страница */
+  user-select:none;
+  -webkit-user-drag:none;
+  max-width:100%;
+  max-height:100%;
+  transform-origin:center center;
+  border-radius:22px;
+  box-shadow:0 22px 46px rgba(0,0,0,.55);
+  border:1px solid rgba(216,176,76,.18);
+  background:rgba(255,255,255,.02);
+}
 
 /* нижняя панель */
 .sticky-checkout{
@@ -896,11 +969,9 @@ mark{background:rgba(216,176,76,.22);padding:0 .12em;border-radius:6px;color:var
   <div class="payments">
     <button class="btn active" id="payCash" onclick="setPayment('cash')"></button>
     <button class="btn" id="payClick" onclick="setPayment('click')"></button>
-    <!-- ✅ НОВОЕ: Онлайн -->
     <button class="btn" id="payOnline" onclick="setPayment('online')"></button>
   </div>
 
-  <!-- ✅ НОВОЕ: детали для Онлайн (копирование) -->
   <div class="online-details" id="onlineDetails">
     <div class="online-row">
       <div class="online-left">
@@ -930,6 +1001,17 @@ mark{background:rgba(216,176,76,.22);padding:0 .12em;border-radius:6px;color:var
       <span id="stickyTotal">0</span> <small>сум</small>
     </div>
     <button class="sticky-btn" onclick="openCart()" id="stickyCartBtn">Корзина</button>
+  </div>
+</div>
+
+<!-- ✅ Просмотр фото (увеличение + pinch zoom) -->
+<div class="photo-viewer" id="photoViewer" onclick="photoBackdropClick(event)">
+  <div class="photo-topbar">
+    <div class="photo-hint" id="photoHint">🔍 Масштаб: pinch / двойной тап</div>
+    <button class="photo-close" onclick="closePhotoViewer(event)">×</button>
+  </div>
+  <div class="photo-stage" id="photoStage">
+    <img class="photo-zoom" id="photoZoomImg" alt="photo">
   </div>
 </div>
 
@@ -1090,9 +1172,15 @@ let lang='uz', category='breakfast', type='pickup', payment='cash', cart={};
 const DELIVERY_FEE = 15000;
 
 const TEXT={
-  ru:{delivery:'🚚 Доставка',pickup:'🏃 Самовывоз',address:'📍 Адрес доставки',phone:'📞 Телефон',cart:'🛒 Корзина',order:'Оформить заказ',comment:'✍️ Комментарий к заказу',cash:'💵 Наличные',click:'💳 CLICK',online:'💳 Онлайн',results:'Результаты поиска',popular:'🔥 Популярное',empty:'Корзина пустая',deliveryFee:'Доставка',card:'Номер карты',receiver:'Получатель',copied:'Скопировано ✅',copy:'Копировать'},
-  uz:{delivery:'🚚 Yetkazish',pickup:'🏃 Olib ketish',address:'📍 Manzil',phone:'📞 Telefon',cart:'🛒 Savat',order:'Buyurtma berish',comment:'✍️ Izoh',cash:'💵 Naqd',click:'💳 CLICK',online:'💳 Online',results:'Qidiruv natijalari',popular:'🔥 Ommabop',empty:"Savat bo‘sh",deliveryFee:'Yetkazish',card:'Karta raqami',receiver:'Qabul qiluvchi',copied:'Nusxa olindi ✅',copy:'Nusxa'},
-  en:{delivery:'🚚 Delivery',pickup:'🏃 Pickup',address:'📍 Address',phone:'📞 Phone',cart:'🛒 Cart',order:'Place order',comment:'✍️ Comment',cash:'💵 Cash',click:'💳 CLICK',online:'💳 Online',results:'Search results',popular:'🔥 Popular',empty:'Cart is empty',deliveryFee:'Delivery',card:'Card number',receiver:'Receiver',copied:'Copied ✅',copy:'Copy'}
+  ru:{delivery:'🚚 Доставка',pickup:'🏃 Самовывоз',address:'📍 Адрес доставки',phone:'📞 Телефон',cart:'🛒 Корзина',order:'Оформить заказ',comment:'✍️ Комментарий к заказу',cash:'💵 Наличные',click:'💳 CLICK',online:'💳 Онлайн',results:'Результаты поиска',popular:'🔥 Популярное',empty:'Корзина пустая',deliveryFee:'Доставка',card:'Номер карты',receiver:'Получатель',copied:'Скопировано ✅',copy:'Копировать',zoomHint:'🔍 Масштаб: pinch / двойной тап'},
+  uz:{delivery:'🚚 Yetkazish',pickup:'🏃 Olib ketish',address:'📍 Manzil',phone:'📞 Telefon',cart:'🛒 Savat',order:'Buyurtma berish',comment:'✍️ Izoh',cash:'💵 Naqd',click:'💳 CLICK',online:'💳 Online',results:'Qidiruv natijalari',popular:'🔥 Ommabop',empty:"Savat bo‘sh",deliveryFee:'Yetkazish',card:'Karta raqami',receiver:'Qabul qiluvchi',copied:'Nusxa olindi ✅',copy:'Nusxa',zoomHint:'🔍 Kattalashtirish: pinch / double tap'},
+  en:{delivery:'🚚 Delivery',pickup:'🏃 Pickup',address:'📍 Address',phone:'📞 Phone',cart:'🛒 Cart',order:'Place order',comment:'✍️ Comment',cash:'💵 Cash',click:'💳 CLICK',online:'💳 Online',results:'Search results',popular:'🔥 Popular',empty:'Cart is empty',deliveryFee:'Delivery',card:'Card number',receiver:'Receiver',copied:'Copied ✅',copy:'Copy',zoomHint:'🔍 Zoom: pinch / double tap'}
+};
+
+/* ✅ ДАННЫЕ ОНЛАЙН ОПЛАТЫ (поменяй на свои) */
+const ONLINE_PAY = {
+  card: "8600 0000 0000 0000",
+  receiver: "ORZU-DIL"
 };
 
 const MENU = {
@@ -1218,8 +1306,8 @@ const orderBtn = document.getElementById('orderBtn');
 const comment = document.getElementById('comment');
 const payCash = document.getElementById('payCash');
 const payClick = document.getElementById('payClick');
-const payOnline = document.getElementById('payOnline');          // ✅
-const onlineDetails = document.getElementById('onlineDetails');  // ✅
+const payOnline = document.getElementById('payOnline');
+const onlineDetails = document.getElementById('onlineDetails');
 const onlineCardLabel = document.getElementById('onlineCardLabel');
 const onlineNameLabel = document.getElementById('onlineNameLabel');
 const searchWrap = document.getElementById('searchWrap');
@@ -1235,12 +1323,12 @@ const popup = document.getElementById('popup');
 const deliveryLine = document.getElementById('deliveryLine');
 const deliveryFee = document.getElementById('deliveryFee');
 
-/* ✅ ДАННЫЕ ОНЛАЙН ОПЛАТЫ (поменяй на свои) */
-const ONLINE_PAY = {
-  card: "8600 0000 0000 0000",
-  receiver: "ORZU-DIL"
-};
+/* viewer elems */
+const photoViewer = document.getElementById('photoViewer');
+const photoZoomImg = document.getElementById('photoZoomImg');
+const photoHint = document.getElementById('photoHint');
 
+/* ---------- онлайн реквизиты ---------- */
 function loadSaved(){
   const a = localStorage.getItem('orzu_dil_address') || '';
   const p = localStorage.getItem('orzu_dil_phone') || '';
@@ -1253,6 +1341,7 @@ function bindSave(){
 }
 
 /* ✅ доставка: показываем строку и считаем 15000 */
+const DELIVERY_FEE = 15000;
 function getDeliveryFee(){
   return (type === 'delivery') ? DELIVERY_FEE : 0;
 }
@@ -1317,6 +1406,140 @@ async function copyOnline(which){
   }
 }
 
+/* ✅ Фото-viewer: zoom + drag + double tap */
+let pvScale = 1, pvX = 0, pvY = 0;
+let pvDragging = false;
+let pvStartX = 0, pvStartY = 0;
+let pvLastTap = 0;
+let pvPinching = false;
+let pvStartDist = 0;
+let pvStartScale = 1;
+
+function applyPVTransform(){
+  // limits
+  const s = Math.max(1, Math.min(4, pvScale));
+  pvScale = s;
+  photoZoomImg.style.transform = `translate(${pvX}px, ${pvY}px) scale(${pvScale})`;
+}
+
+function openPhotoViewer(src){
+  if(!src) return;
+  photoZoomImg.src = src;
+  photoViewer.classList.add('show');
+
+  // reset
+  pvScale = 1; pvX = 0; pvY = 0;
+  pvDragging = false; pvPinching = false;
+  applyPVTransform();
+
+  try{
+    // чтобы не дергался фон
+    document.body.style.overflow = 'hidden';
+  }catch(_){}
+}
+
+function closePhotoViewer(e){
+  if(e){ try{ e.preventDefault(); e.stopPropagation(); }catch(_){ } }
+  photoViewer.classList.remove('show');
+  try{ document.body.style.overflow = ''; }catch(_){}
+}
+
+function photoBackdropClick(e){
+  if(e.target && e.target.id === 'photoViewer') closePhotoViewer();
+}
+
+function distance(t1, t2){
+  const dx = t1.clientX - t2.clientX;
+  const dy = t1.clientY - t2.clientY;
+  return Math.sqrt(dx*dx + dy*dy);
+}
+
+/* pointer events (поддерживает и touch и mouse) */
+photoZoomImg.addEventListener('pointerdown', (e)=>{
+  e.preventDefault();
+  photoZoomImg.setPointerCapture(e.pointerId);
+  pvDragging = true;
+  pvStartX = e.clientX - pvX;
+  pvStartY = e.clientY - pvY;
+});
+
+photoZoomImg.addEventListener('pointermove', (e)=>{
+  if(!pvDragging || pvPinching) return;
+  pvX = (e.clientX - pvStartX);
+  pvY = (e.clientY - pvStartY);
+  applyPVTransform();
+});
+
+photoZoomImg.addEventListener('pointerup', (e)=>{
+  pvDragging = false;
+});
+
+photoZoomImg.addEventListener('pointercancel', ()=>{
+  pvDragging = false;
+});
+
+/* wheel zoom (desktop) */
+photoZoomImg.addEventListener('wheel', (e)=>{
+  e.preventDefault();
+  const delta = -e.deltaY;
+  const step = delta > 0 ? 0.12 : -0.12;
+  pvScale = pvScale + step;
+  applyPVTransform();
+}, {passive:false});
+
+/* touch pinch */
+photoZoomImg.addEventListener('touchstart', (e)=>{
+  if(e.touches && e.touches.length === 2){
+    pvPinching = true;
+    pvStartDist = distance(e.touches[0], e.touches[1]);
+    pvStartScale = pvScale;
+  }
+}, {passive:false});
+
+photoZoomImg.addEventListener('touchmove', (e)=>{
+  if(e.touches && e.touches.length === 2){
+    e.preventDefault();
+    const d = distance(e.touches[0], e.touches[1]);
+    const k = d / (pvStartDist || d);
+    pvScale = pvStartScale * k;
+    applyPVTransform();
+  }
+}, {passive:false});
+
+photoZoomImg.addEventListener('touchend', ()=>{
+  pvPinching = false;
+});
+
+/* double tap / double click */
+photoZoomImg.addEventListener('click', (e)=>{
+  e.preventDefault();
+  const now = Date.now();
+  if(now - pvLastTap < 300){
+    // toggle zoom
+    if(pvScale > 1.01){
+      pvScale = 1; pvX = 0; pvY = 0;
+    }else{
+      pvScale = 2;
+    }
+    applyPVTransform();
+  }
+  pvLastTap = now;
+});
+
+/* ✅ глобальный клик по мини-изображениям */
+document.addEventListener('click', (e)=>{
+  const img = e.target && e.target.closest ? e.target.closest('.img img, .pop-img img') : null;
+  if(!img) return;
+
+  // если нажали по изображению внутри карточки — открыть viewer
+  const src = img.getAttribute('src');
+  if(src){
+    e.preventDefault();
+    e.stopPropagation();
+    openPhotoViewer(src);
+  }
+}, true);
+
 function setLang(l,b){
   lang=l;
   document.querySelectorAll('.langs .btn').forEach(x=>x.classList.remove('active'));
@@ -1335,23 +1558,24 @@ function applyLang(){
 
   payCash.innerText=TEXT[lang].cash;
   payClick.innerText=TEXT[lang].click;
-  payOnline.innerText=TEXT[lang].online;                 // ✅
+  payOnline.innerText=TEXT[lang].online;
 
-  onlineCardLabel.innerText = TEXT[lang].card;           // ✅
-  onlineNameLabel.innerText = TEXT[lang].receiver;       // ✅
+  onlineCardLabel.innerText = TEXT[lang].card;
+  onlineNameLabel.innerText = TEXT[lang].receiver;
 
-  // кнопки "копировать" — локализация (без удаления, просто обновим текст)
   document.querySelectorAll('.copy-btn').forEach(btn=>{
     btn.innerText = TEXT[lang].copy || 'Копировать';
   });
 
+  // hint viewer
+  if(photoHint) photoHint.innerText = TEXT[lang].zoomHint || '🔍 Масштаб: pinch / двойной тап';
+
+  document.getElementById('onlineCardValue').innerText = ONLINE_PAY.card;
+  document.getElementById('onlineNameValue').innerText = ONLINE_PAY.receiver;
+
   searchTitle.innerText = TEXT[lang].results;
   popularTitle.innerText = TEXT[lang].popular;
   stickyCartBtn.innerText = TEXT[lang].cart;
-
-  // значения онлайн оплаты
-  document.getElementById('onlineCardValue').innerText = ONLINE_PAY.card;
-  document.getElementById('onlineNameValue').innerText = ONLINE_PAY.receiver;
 
   renderPopular();
   renderQuickFilters();
@@ -1635,8 +1859,6 @@ function sendOrder(){
     comment: comment.value,
     order_id: genOrderId(),
     lang,
-
-    /* ✅ добавим онлайн реквизиты в payload (если выбрано online) */
     online_payment: (payment === 'online') ? { card: ONLINE_PAY.card, receiver: ONLINE_PAY.receiver } : null
   };
 
