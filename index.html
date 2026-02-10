@@ -222,29 +222,6 @@ body{
   justify-content:center;
 }
 
-/* ✅ категории блюд БОЛЬШЕ (quick filters) */
-.quick-filters{
-  display:flex;
-  gap:12px;
-  padding:0 12px 12px;
-  overflow-x:auto;
-}
-.qbtn{
-  border:1px solid rgba(216,176,76,.26);
-  background:linear-gradient(180deg, rgba(255,255,255,.06), rgba(255,255,255,.03));
-  box-shadow: 0 14px 30px rgba(0,0,0,.46);
-  border-radius:999px;
-
-  padding:14px 18px;        /* ✅ больше */
-  font-weight:900;
-  font-size:14px;           /* ✅ больше */
-  cursor:pointer;
-  white-space:nowrap;
-  transition:.15s;
-  color:var(--text);
-}
-.qbtn:active{transform:scale(.98);}
-
 .btn{
   padding:12px 20px;
   border-radius:var(--r-pill);
@@ -287,12 +264,33 @@ body{
   box-shadow: 0 16px 34px rgba(0,0,0,.52), 0 0 0 2px rgba(216,176,76,.08);
 }
 
+/* ✅✅ ВОССТАНОВИЛ: категории (tabs) */
 .categories{
   display:flex;
   gap:12px;
   padding:14px;
   overflow-x:auto;
   scroll-behavior:smooth;
+}
+.catbtn{
+  border:1px solid rgba(216,176,76,.26);
+  background:linear-gradient(180deg, rgba(255,255,255,.06), rgba(255,255,255,.03));
+  box-shadow: 0 14px 30px rgba(0,0,0,.46);
+  border-radius:999px;
+
+  padding:14px 18px;
+  font-weight:900;
+  font-size:14px;
+  cursor:pointer;
+  white-space:nowrap;
+  transition:.15s;
+  color:var(--text);
+}
+.catbtn:active{transform:scale(.98);}
+.catbtn.active{
+  background: linear-gradient(135deg, var(--gold), var(--gold-2));
+  color:#141416;
+  border:1px solid rgba(255,255,255,.16);
 }
 
 .products{
@@ -331,7 +329,7 @@ body{
   overflow:hidden;
 }
 
-/* ✅✅ Закругляем фото в иконках */
+/* ✅ закругление фото + zoom-cursor */
 .img img{
   max-width:125px;
   max-height:125px;
@@ -341,9 +339,9 @@ body{
   opacity:1;
   transform:scale(1.05);
   transition:.15s;
-  border-radius:18px;               /* ✅ закругление */
+  border-radius:18px;
   filter: saturate(1.15) contrast(1.06) brightness(1.06) drop-shadow(0 12px 18px rgba(0,0,0,.55));
-  cursor: zoom-in;                  /* ✅ подсказка, что можно увеличить */
+  cursor: zoom-in;
 }
 .card:active .img img{transform:scale(1.12);}
 
@@ -397,13 +395,9 @@ body{
 
 textarea.input{height:90px;}
 
-/* ✅✅ FIX: кнопка заказа НЕ перекрывается sticky корзиной:
-   делаем запас снизу внутри корзины и чуть меньше margin у кнопки */
-.cart{
-  padding-bottom: calc(16px + var(--sticky-h, 92px) + 18px);
-}
+/* ✅✅ FIX: кнопка заказа НЕ перекрывается sticky корзиной */
+.cart{ padding-bottom: calc(16px + var(--sticky-h, 92px) + 18px); }
 
-/* кнопка заказа */
 .order-btn{
   width:100%;
   padding:18px;
@@ -436,68 +430,6 @@ textarea.input{height:90px;}
   box-shadow: 0 22px 46px rgba(0,0,0,.60), 0 0 24px rgba(216,176,76,.10);
   color:var(--text);
 }
-
-/* ✅✅ Платежи в ОДНУ строку */
-.payments{
-  display:flex;
-  gap:10px;
-  padding:12px;
-  justify-content:space-between;
-}
-.payments .btn{
-  min-width:0;
-  flex:1 1 0;
-  padding:12px 10px;     /* компактнее чтобы влезло 3 */
-  font-size:13px;
-}
-
-/* ✅ Онлайн-детали (карта/получатель) */
-.online-details{
-  margin:4px 12px 0;
-  padding:12px;
-  border-radius:18px;
-  border:1px solid rgba(216,176,76,.20);
-  background:linear-gradient(180deg, rgba(255,255,255,.06), rgba(255,255,255,.03));
-  box-shadow: 0 16px 34px rgba(0,0,0,.45);
-  display:none;
-}
-.online-details.show{display:block;}
-
-.online-row{
-  display:flex;
-  align-items:center;
-  justify-content:space-between;
-  gap:10px;
-  padding:10px 10px;
-  border-radius:14px;
-  background:rgba(255,255,255,.04);
-  border:1px solid rgba(216,176,76,.14);
-  margin-top:10px;
-}
-.online-row:first-child{margin-top:0;}
-
-.online-left{min-width:0;}
-.online-label{font-weight:900; font-size:12px; opacity:.78;}
-.online-value{
-  font-weight:900;
-  font-size:15px;
-  margin-top:3px;
-  word-break:break-word;
-}
-.copy-btn{
-  flex:0 0 auto;
-  padding:10px 12px;
-  border-radius:14px;
-  border:1px solid rgba(255,255,255,.18);
-  background:linear-gradient(135deg,var(--gold), var(--gold-2));
-  color:#141416;
-  font-weight:900;
-  cursor:pointer;
-  box-shadow: 0 14px 30px rgba(216,176,76,.12), 0 12px 24px rgba(0,0,0,.35);
-  transition:.15s;
-  white-space:nowrap;
-}
-.copy-btn:active{transform:scale(.98);}
 
 .search-wrap{
   width:85%;
@@ -543,6 +475,29 @@ textarea.input{height:90px;}
 
 mark{background:rgba(216,176,76,.22);padding:0 .12em;border-radius:6px;color:var(--text);}
 
+/* ✅ quickFilters оставил (ничего не удаляем) */
+.quick-filters{
+  display:flex;
+  gap:12px;
+  padding:0 12px 12px;
+  overflow-x:auto;
+}
+.qbtn{
+  border:1px solid rgba(216,176,76,.26);
+  background:linear-gradient(180deg, rgba(255,255,255,.06), rgba(255,255,255,.03));
+  box-shadow: 0 14px 30px rgba(0,0,0,.46);
+  border-radius:999px;
+
+  padding:14px 18px;
+  font-weight:900;
+  font-size:14px;
+  cursor:pointer;
+  white-space:nowrap;
+  transition:.15s;
+  color:var(--text);
+}
+.qbtn:active{transform:scale(.98);}
+
 .popular-wrap{width:100%;padding:4px 12px 6px;}
 .popular-title{width:100%;font-weight:900;padding:8px 2px 10px;display:flex;align-items:center;gap:8px;color:var(--text);}
 .popular-row{display:flex;gap:12px;overflow-x:auto;padding:2px 2px 10px;}
@@ -574,9 +529,9 @@ mark{background:rgba(216,176,76,.22);padding:0 .12em;border-radius:6px;color:var
   width:100%;
   height:100%;
   object-fit:cover;
-  border-radius:18px;   /* ✅ */
+  border-radius:18px;
   filter:saturate(1.15) contrast(1.06) brightness(1.06);
-  cursor: zoom-in;      /* ✅ */
+  cursor: zoom-in;
 }
 .pop-name{font-weight:900;margin-top:8px;}
 .pop-price{font-weight:900;color:var(--gold);margin-top:4px;}
@@ -606,7 +561,62 @@ mark{background:rgba(216,176,76,.22);padding:0 .12em;border-radius:6px;color:var
 .pop-counter button:active{transform:scale(.96);}
 .pop-counter span{font-weight:900; min-width:18px; text-align:center;}
 
-/* ✅ Фото-просмотр (увеличение) */
+/* ✅✅ Платежи в одну строку (3 кнопки) */
+.payments{
+  display:flex;
+  gap:10px;
+  padding:12px;
+  justify-content:space-between;
+}
+.payments .btn{
+  min-width:0;
+  flex:1 1 0;
+  padding:12px 10px;
+  font-size:13px;
+}
+
+/* ✅ Онлайн детали */
+.online-details{
+  margin:4px 12px 0;
+  padding:12px;
+  border-radius:18px;
+  border:1px solid rgba(216,176,76,.20);
+  background:linear-gradient(180deg, rgba(255,255,255,.06), rgba(255,255,255,.03));
+  box-shadow: 0 16px 34px rgba(0,0,0,.45);
+  display:none;
+}
+.online-details.show{display:block;}
+.online-row{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:10px;
+  padding:10px 10px;
+  border-radius:14px;
+  background:rgba(255,255,255,.04);
+  border:1px solid rgba(216,176,76,.14);
+  margin-top:10px;
+}
+.online-row:first-child{margin-top:0;}
+.online-left{min-width:0;}
+.online-label{font-weight:900; font-size:12px; opacity:.78;}
+.online-value{font-weight:900; font-size:15px; margin-top:3px; word-break:break-word;}
+.copy-btn{
+  flex:0 0 auto;
+  padding:10px 12px;
+  border-radius:14px;
+  border:1px solid rgba(255,255,255,.18);
+  background:linear-gradient(135deg,var(--gold), var(--gold-2));
+  color:#141416;
+  font-weight:900;
+  cursor:pointer;
+  box-shadow: 0 14px 30px rgba(216,176,76,.12), 0 12px 24px rgba(0,0,0,.35);
+  transition:.15s;
+  white-space:nowrap;
+}
+.copy-btn:active{transform:scale(.98);}
+
+/* ✅ Фото viewer */
 .photo-viewer{
   position:fixed;
   inset:0;
@@ -619,7 +629,6 @@ mark{background:rgba(216,176,76,.22);padding:0 .12em;border-radius:6px;color:var
   flex-direction:column;
 }
 .photo-viewer.show{opacity:1;pointer-events:auto;}
-
 .photo-topbar{
   display:flex;
   align-items:center;
@@ -627,11 +636,7 @@ mark{background:rgba(216,176,76,.22);padding:0 .12em;border-radius:6px;color:var
   padding:12px;
   padding-top: calc(12px + var(--tg-safe-area-inset-top, 0px) + env(safe-area-inset-top, 0px));
 }
-.photo-hint{
-  font-weight:900;
-  font-size:12px;
-  opacity:.85;
-}
+.photo-hint{font-weight:900;font-size:12px;opacity:.85;}
 .photo-close{
   width:42px;height:42px;
   border-radius:14px;
@@ -643,7 +648,6 @@ mark{background:rgba(216,176,76,.22);padding:0 .12em;border-radius:6px;color:var
   cursor:pointer;
 }
 .photo-close:active{transform:scale(.98);}
-
 .photo-stage{
   flex:1;
   display:flex;
@@ -653,9 +657,8 @@ mark{background:rgba(216,176,76,.22);padding:0 .12em;border-radius:6px;color:var
   padding-bottom: calc(18px + var(--tg-safe-area-inset-bottom, 0px) + env(safe-area-inset-bottom, 0px));
   overflow:hidden;
 }
-
 .photo-zoom{
-  touch-action: none; /* ✅ иначе pinch/drag будет прокручиваться страница */
+  touch-action: none;
   user-select:none;
   -webkit-user-drag:none;
   max-width:100%;
@@ -806,7 +809,6 @@ mark{background:rgba(216,176,76,.22);padding:0 .12em;border-radius:6px;color:var
   .logo-frame img{width:48px;height:48px;}
   .payments{gap:8px;}
   .payments .btn{padding:12px 8px; font-size:12.5px;}
-  .qbtn{padding:13px 16px; font-size:13.5px;}
 }
 </style>
 </head>
@@ -942,9 +944,10 @@ mark{background:rgba(216,176,76,.22);padding:0 .12em;border-radius:6px;color:var
   <div class="popular-row" id="popularRow"></div>
 </div>
 
-<!-- ✅ Ниже Популярное: убрали блок категорий (tabs) -->
-<!-- <div class="categories" id="cats"></div> -->
+<!-- ✅✅ ВОССТАНОВИЛ: категории (tabs) -->
+<div class="categories" id="cats"></div>
 
+<!-- ✅ оставил: быстрые фильтры -->
 <div class="quick-filters" id="quickFilters"></div>
 
 <div class="types">
@@ -1322,13 +1325,13 @@ const stickyCartBtn = document.getElementById('stickyCartBtn');
 const popup = document.getElementById('popup');
 const deliveryLine = document.getElementById('deliveryLine');
 const deliveryFee = document.getElementById('deliveryFee');
+const cats = document.getElementById('cats');
 
 /* viewer elems */
 const photoViewer = document.getElementById('photoViewer');
 const photoZoomImg = document.getElementById('photoZoomImg');
 const photoHint = document.getElementById('photoHint');
 
-/* ---------- онлайн реквизиты ---------- */
 function loadSaved(){
   const a = localStorage.getItem('orzu_dil_address') || '';
   const p = localStorage.getItem('orzu_dil_phone') || '';
@@ -1341,7 +1344,6 @@ function bindSave(){
 }
 
 /* ✅ доставка: показываем строку и считаем 15000 */
-const DELIVERY_FEE = 15000;
 function getDeliveryFee(){
   return (type === 'delivery') ? DELIVERY_FEE : 0;
 }
@@ -1416,9 +1418,7 @@ let pvStartDist = 0;
 let pvStartScale = 1;
 
 function applyPVTransform(){
-  // limits
-  const s = Math.max(1, Math.min(4, pvScale));
-  pvScale = s;
+  pvScale = Math.max(1, Math.min(4, pvScale));
   photoZoomImg.style.transform = `translate(${pvX}px, ${pvY}px) scale(${pvScale})`;
 }
 
@@ -1427,15 +1427,11 @@ function openPhotoViewer(src){
   photoZoomImg.src = src;
   photoViewer.classList.add('show');
 
-  // reset
   pvScale = 1; pvX = 0; pvY = 0;
   pvDragging = false; pvPinching = false;
   applyPVTransform();
 
-  try{
-    // чтобы не дергался фон
-    document.body.style.overflow = 'hidden';
-  }catch(_){}
+  try{ document.body.style.overflow = 'hidden'; }catch(_){}
 }
 
 function closePhotoViewer(e){
@@ -1454,7 +1450,6 @@ function distance(t1, t2){
   return Math.sqrt(dx*dx + dy*dy);
 }
 
-/* pointer events (поддерживает и touch и mouse) */
 photoZoomImg.addEventListener('pointerdown', (e)=>{
   e.preventDefault();
   photoZoomImg.setPointerCapture(e.pointerId);
@@ -1462,23 +1457,15 @@ photoZoomImg.addEventListener('pointerdown', (e)=>{
   pvStartX = e.clientX - pvX;
   pvStartY = e.clientY - pvY;
 });
-
 photoZoomImg.addEventListener('pointermove', (e)=>{
   if(!pvDragging || pvPinching) return;
   pvX = (e.clientX - pvStartX);
   pvY = (e.clientY - pvStartY);
   applyPVTransform();
 });
+photoZoomImg.addEventListener('pointerup', ()=>{ pvDragging = false; });
+photoZoomImg.addEventListener('pointercancel', ()=>{ pvDragging = false; });
 
-photoZoomImg.addEventListener('pointerup', (e)=>{
-  pvDragging = false;
-});
-
-photoZoomImg.addEventListener('pointercancel', ()=>{
-  pvDragging = false;
-});
-
-/* wheel zoom (desktop) */
 photoZoomImg.addEventListener('wheel', (e)=>{
   e.preventDefault();
   const delta = -e.deltaY;
@@ -1487,7 +1474,6 @@ photoZoomImg.addEventListener('wheel', (e)=>{
   applyPVTransform();
 }, {passive:false});
 
-/* touch pinch */
 photoZoomImg.addEventListener('touchstart', (e)=>{
   if(e.touches && e.touches.length === 2){
     pvPinching = true;
@@ -1506,16 +1492,12 @@ photoZoomImg.addEventListener('touchmove', (e)=>{
   }
 }, {passive:false});
 
-photoZoomImg.addEventListener('touchend', ()=>{
-  pvPinching = false;
-});
+photoZoomImg.addEventListener('touchend', ()=>{ pvPinching = false; });
 
-/* double tap / double click */
 photoZoomImg.addEventListener('click', (e)=>{
   e.preventDefault();
   const now = Date.now();
   if(now - pvLastTap < 300){
-    // toggle zoom
     if(pvScale > 1.01){
       pvScale = 1; pvX = 0; pvY = 0;
     }else{
@@ -1530,8 +1512,6 @@ photoZoomImg.addEventListener('click', (e)=>{
 document.addEventListener('click', (e)=>{
   const img = e.target && e.target.closest ? e.target.closest('.img img, .pop-img img') : null;
   if(!img) return;
-
-  // если нажали по изображению внутри карточки — открыть viewer
   const src = img.getAttribute('src');
   if(src){
     e.preventDefault();
@@ -1567,7 +1547,6 @@ function applyLang(){
     btn.innerText = TEXT[lang].copy || 'Копировать';
   });
 
-  // hint viewer
   if(photoHint) photoHint.innerText = TEXT[lang].zoomHint || '🔍 Масштаб: pinch / двойной тап';
 
   document.getElementById('onlineCardValue').innerText = ONLINE_PAY.card;
@@ -1578,7 +1557,8 @@ function applyLang(){
   stickyCartBtn.innerText = TEXT[lang].cart;
 
   renderPopular();
-  renderQuickFilters();
+  renderCats();          /* ✅ восстановили */
+  renderQuickFilters();  /* ✅ оставили */
   renderProducts();
   updateTotal();
   updateTypeFields();
@@ -1632,7 +1612,31 @@ function popChg(e,id,delta){
   if(isSearchOpen()) closeSearch();
 }
 
-/* quick filters = выбор категории */
+/* ✅✅ ВОССТАНОВИЛ: категории (tabs) */
+function renderCats(){
+  const keys = ['breakfast','second','first','shashlik','fish','salad','bread','drinks','preorder'];
+  cats.innerHTML = '';
+  keys.forEach(k=>{
+    if(!MENU[k]) return;
+
+    const label = ({
+      breakfast:{ru:'🍳 Завтрак',uz:'🍳 Nonushta',en:'🍳 Breakfast'},
+      first:{ru:'🍜 Первые',uz:'🍜 Birinchi',en:'🍜 First'},
+      second:{ru:'🍲 Вторые',uz:'🍲 Ikkinchi',en:'🍲 Main'},
+      shashlik:{ru:'🔥 Шашлык',uz:'🔥 Shashlik',en:'🔥 Shashlik'},
+      fish:{ru:'🐟 Рыба',uz:'🐟 Baliq',en:'🐟 Fish'},
+      salad:{ru:'🥗 Салат',uz:'🥗 Salat',en:'🥗 Salad'},
+      bread:{ru:'🥖 Хлеб',uz:'🥖 Non',en:'🥖 Bread'},
+      drinks:{ru:'🥤 Напитки',uz:'🥤 Ichimlik',en:'🥤 Drinks'},
+      preorder:{ru:'📦 Под заказ',uz:'📦 Buyurtma',en:'📦 Pre-order'}
+    })[k][lang] || k;
+
+    const active = (category === k) ? 'active' : '';
+    cats.innerHTML += `<button class="catbtn ${active}" onclick="pickCategory('${k}', true)">${label}</button>`;
+  });
+}
+
+/* quick filters = выбор категории (оставил) */
 function renderQuickFilters(){
   const keys = ['breakfast','second','first','shashlik','fish','salad','bread','drinks','preorder'];
   quickFilters.innerHTML = '';
@@ -1654,10 +1658,11 @@ function renderQuickFilters(){
   });
 }
 
-function pickCategory(k){
+function pickCategory(k, fromCats=false){
   if(isSearchOpen()) closeSearch();
   category = k;
   renderProducts();
+  if(fromCats) renderCats(); else renderCats(); /* ✅ обновим подсветку в любом случае */
 }
 
 function cardHTML(it, q=''){
@@ -1705,7 +1710,6 @@ function price(id){
   return (ITEM_INDEX[id] && ITEM_INDEX[id].p) ? ITEM_INDEX[id].p : 0;
 }
 
-/* ✅ total + доставка */
 function calcItemsSum(){
   let s=0;
   for(let id in cart) s += (cart[id]||0) * price(id);
@@ -1732,7 +1736,6 @@ function setType(t,b){
   updateTotal();
 }
 
-/* ✅ 3 оплаты: cash / click / online */
 function setPayment(p){
   payment=p;
   payCash.classList.toggle('active',p==='cash');
@@ -1750,6 +1753,7 @@ function toggleSearch(){
 function openSearch(){
   searchWrap.classList.add('show');
   searchTitle.classList.add('show');
+  cats.style.display = 'none';         /* ✅ чтобы не мешали */
   quickFilters.style.display = 'none';
   popularWrap.style.display = 'none';
   searchInput.value = '';
@@ -1759,6 +1763,7 @@ function openSearch(){
 function closeSearch(){
   searchWrap.classList.remove('show');
   searchTitle.classList.remove('show');
+  cats.style.display = '';
   quickFilters.style.display = '';
   popularWrap.style.display = '';
   searchInput.value = '';
@@ -1869,11 +1874,6 @@ function sendOrder(){
 }
 
 /* init defaults */
-function setDefaultsUI(){
-  // lang UZ already active in HTML
-  // type pickup already active in HTML
-  // apply placeholders and render
-}
 loadSaved();
 bindSave();
 applyLang();
