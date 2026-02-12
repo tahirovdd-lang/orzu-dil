@@ -332,14 +332,14 @@ body{
     rgba(0,0,0,.18);
   border:1px solid rgba(216,176,76,.12);
   overflow:hidden;
-  padding:14px;              /* ✅ отдаляет фото */
+  padding:14px;
 }
 .img img{
   width:100%;
   height:100%;
-  object-fit:contain;         /* ✅ не режет */
-  border-radius:18px;         /* ✅ круглая картинка */
-  transform:none;             /* ✅ без зума */
+  object-fit:contain;
+  border-radius:18px;
+  transform:none;
   transition:.15s;
   filter:saturate(1.15) contrast(1.06) brightness(1.06) drop-shadow(0 12px 18px rgba(0,0,0,.55));
 }
@@ -564,11 +564,13 @@ mark{background:rgba(216,176,76,.22);padding:0 .12em;border-radius:6px;color:var
 
 .popular-wrap{width:100%;padding:4px 12px 6px;}
 .popular-title{width:100%;font-weight:900;padding:8px 2px 10px;display:flex;align-items:center;gap:8px;color:var(--text);}
-.popular-row{display:flex;gap:12px;overflow-x:auto;padding:2px 2px 10px; -webkit-overflow-scrolling:touch;}
+.popular-row{display:flex;gap:14px;overflow-x:auto;padding:2px 2px 14px; -webkit-overflow-scrolling:touch; scroll-snap-type:x proximity;}
+
+/* ✅✅ Увеличили и адаптировали Popular под фото */
 .pop-card{
-  min-width:150px;
+  min-width:200px;                 /* было 150 */
   border-radius:var(--r-lg);
-  padding:10px;
+  padding:12px;
   background:linear-gradient(180deg, rgba(255,255,255,.06), rgba(255,255,255,.03));
   border:1px solid rgba(216,176,76,.18);
   box-shadow: 0 16px 34px rgba(0,0,0,.55), 0 0 22px rgba(216,176,76,.06);
@@ -576,43 +578,44 @@ mark{background:rgba(216,176,76,.22);padding:0 .12em;border-radius:6px;color:var
   transition:.15s;
   position:relative;
   color:var(--text);
+  scroll-snap-align:start;
 }
 .pop-card:active{transform:scale(.99);}
 
-/* ✅✅ POPULAR “отдолили” + contain */
+/* фото выше и крупнее */
 .pop-img{
-  height:74px;
-  border-radius:18px;
+  height:110px;                     /* было 74 */
+  border-radius:20px;
   overflow:hidden;
   display:flex;
   align-items:center;
   justify-content:center;
-  background:radial-gradient(180px 90px at 50% 60%, rgba(216,176,76,.10), transparent 60%), rgba(0,0,0,.18);
+  background:radial-gradient(220px 120px at 50% 60%, rgba(216,176,76,.10), transparent 60%), rgba(0,0,0,.18);
   border:1px solid rgba(216,176,76,.12);
-  padding:8px;
+  padding:10px;                     /* “отдаляет” фото */
 }
 .pop-img img{
   width:100%;
   height:100%;
   object-fit:contain;
-  border-radius:14px;
-  filter:saturate(1.15) contrast(1.06) brightness(1.06);
+  border-radius:16px;
+  filter:saturate(1.15) contrast(1.06) brightness(1.06) drop-shadow(0 12px 18px rgba(0,0,0,.55));
 }
 
-.pop-name{font-weight:900;margin-top:8px;}
-.pop-price{font-weight:900;color:var(--gold);margin-top:4px;}
-.pop-badge{position:absolute;left:10px;top:10px;font-size:18px;pointer-events:none;}
+.pop-name{font-weight:900;margin-top:10px; font-size:14px; line-height:1.15; min-height:34px;}
+.pop-price{font-weight:900;color:var(--gold);margin-top:6px;}
+.pop-badge{position:absolute;left:12px;top:12px;font-size:18px;pointer-events:none;}
 
 .pop-counter{
   display:flex;
   align-items:center;
   justify-content:center;
   gap:10px;
-  margin-top:8px;
+  margin-top:10px;
 }
 .pop-counter button{
-  width:30px;
-  height:30px;
+  width:32px;
+  height:32px;
   border-radius:50%;
   cursor:pointer;
 
@@ -769,6 +772,10 @@ mark{background:rgba(216,176,76,.22);padding:0 .12em;border-radius:6px;color:var
   .payments .btn{padding:12px 8px; font-size:12.5px;}
   .qbtn{padding:13px 16px; font-size:13.5px;}
   .img{height:132px;}
+
+  /* популярное на маленьких экранах */
+  .pop-card{min-width:186px;}
+  .pop-img{height:104px;}
 }
 </style>
 </head>
@@ -794,7 +801,8 @@ mark{background:rgba(216,176,76,.22);padding:0 .12em;border-radius:6px;color:var
     </div>
 
     <div class="search-btn" onclick="toggleSearch()">🔍</div>
-    <div class="geo-btn" onclick="requestGeo()" title="Геолокация">📍</div>
+    <!-- ✅ геолокация: открывает фикс. ссылку -->
+    <div class="geo-btn" onclick="openGeoLink()" title="Геолокация">📍</div>
   </div>
 
   <div class="menu-backdrop" id="menuBackdrop" onclick="closeTopMenu()"></div>
@@ -807,7 +815,8 @@ mark{background:rgba(216,176,76,.22);padding:0 .12em;border-radius:6px;color:var
     </div>
 
     <div class="menu-list">
-      <div class="menu-item" onclick="toggleReviewWidget()" role="button">
+      <!-- ✅ Оставить отзыв: теперь открывает ссылку -->
+      <div class="menu-item" onclick="openYandexReviews(event)" role="button">
         <div class="menu-left">
           <div class="menu-ic">⭐</div>
           <div class="menu-txt">
@@ -816,24 +825,6 @@ mark{background:rgba(216,176,76,.22);padding:0 .12em;border-radius:6px;color:var
           </div>
         </div>
         <div class="menu-right">›</div>
-      </div>
-
-      <div id="reviewWidgetWrap" style="display:none; padding:6px 4px 10px;">
-        <div style="border:1px solid rgba(216,176,76,.22); border-radius:16px; overflow:hidden; background:#fff; padding:10px; display:flex; justify-content:center;">
-          <iframe
-            src="https://yandex.ru/sprav/widget/rating-badge/11046753996?type=rating"
-            width="150"
-            height="50"
-            frameborder="0"
-            style="border:0; display:block;"
-          ></iframe>
-        </div>
-        <div style="text-align:center; font-size:12px; opacity:.80; margin-top:6px; color:var(--text);">
-          Если виджет не открылся в Telegram — откройте отзывы через кнопку ниже.
-        </div>
-        <div style="display:flex; justify-content:center; margin-top:8px;">
-          <button class="btn" style="min-width:auto; padding:10px 14px;" onclick="openYandexReviews(event)">Открыть отзывы</button>
-        </div>
       </div>
 
       <a class="menu-item" href="tel:+998906065606" onclick="closeTopMenu(); callPhone(event)">
@@ -855,7 +846,7 @@ mark{background:rgba(216,176,76,.22);padding:0 .12em;border-radius:6px;color:var
             </svg>
           </div>
           <div class="menu-txt">
-            <div class="menu-name">@ORZU_DIL</div>
+            <div class="menu-name">@kafe_orzu_dil</div>
             <div class="menu-sub">Открыть Instagram</div>
           </div>
         </div>
@@ -961,7 +952,6 @@ mark{background:rgba(216,176,76,.22);padding:0 .12em;border-radius:6px;color:var
   </div>
 </div><!-- /.app -->
 
-<!-- ✅ вернули popup + sticky (иначе JS падает и приложение не открывается) -->
 <div class="popup" id="popup"><div class="popup-box">✅ Заказ принят!</div></div>
 
 <div class="sticky-checkout" id="stickyCheckout">
@@ -980,6 +970,10 @@ try{
   Telegram.WebApp.expand();
   Telegram.WebApp.disableVerticalSwipes?.();
 } catch(_){}
+
+const YA_MAP_URL = "https://yandex.uz/maps/org/112992478285/?ll=66.953942%2C39.656627&z=14";
+const YA_REVIEW_URL = "https://yandex.uz/maps/org/112992478285/?ll=66.953942%2C39.656627&z=14";
+const INSTAGRAM_URL = "https://www.instagram.com/kafe_orzu_dil/";
 
 function setAppHeight(){
   const h = (window.Telegram && Telegram.WebApp && Telegram.WebApp.viewportHeight)
@@ -1024,6 +1018,16 @@ try{ Telegram.WebApp.onEvent('viewportChanged', refreshLayout); } catch(_){}
   }catch(_){}
 })();
 
+function openLinkSafe(url){
+  try{
+    if (window.Telegram && Telegram.WebApp && typeof Telegram.WebApp.openLink === "function"){
+      Telegram.WebApp.openLink(url);
+      return;
+    }
+  }catch(_){}
+  window.open(url, "_blank");
+}
+
 function callPhone(e){
   try{ e.preventDefault(); e.stopPropagation(); }catch(_){}
   const tel = "tel:+998906065606";
@@ -1036,38 +1040,10 @@ function callPhone(e){
   try{ window.location.href = tel; }catch(_){}
 }
 
-function requestGeo(){
+/* ✅ геолокация: фиксированная ссылка */
+function openGeoLink(){
   closeTopMenu();
-  try{
-    if (window.Telegram && Telegram.WebApp && typeof Telegram.WebApp.requestLocation === 'function'){
-      Telegram.WebApp.requestLocation((loc)=>{
-        if(!loc){ alert('Геолокация не выдана'); return; }
-        const lat = loc.latitude, lon = loc.longitude;
-        const url = `https://yandex.ru/maps/?ll=${lon}%2C${lat}&z=16`;
-        try{ Telegram.WebApp.openLink(url); }catch(_){ window.open(url,'_blank'); }
-      });
-      return;
-    }
-  }catch(_){}
-
-  if(!navigator.geolocation){
-    alert('Геолокация недоступна');
-    return;
-  }
-  navigator.geolocation.getCurrentPosition((pos)=>{
-    const lat = pos.coords.latitude;
-    const lon = pos.coords.longitude;
-    const url = `https://yandex.ru/maps/?ll=${lon}%2C${lat}&z=16`;
-    try{
-      if (window.Telegram && Telegram.WebApp && typeof Telegram.WebApp.openLink === "function"){
-        Telegram.WebApp.openLink(url);
-        return;
-      }
-    }catch(_){}
-    window.open(url,'_blank');
-  }, ()=>{
-    alert('Не удалось получить геолокацию');
-  }, {enableHighAccuracy:true, timeout:8000, maximumAge:0});
+  openLinkSafe(YA_MAP_URL);
 }
 
 /* меню */
@@ -1080,33 +1056,21 @@ function closeTopMenu(){
   document.getElementById('menuBackdrop').classList.remove('show');
   document.getElementById('menuSheet').classList.remove('show');
 }
-function toggleReviewWidget(){
-  const w = document.getElementById('reviewWidgetWrap');
-  w.style.display = (w.style.display === 'none' || !w.style.display) ? 'block' : 'none';
-}
+
+/* ✅ Оставить отзыв: фиксированная ссылка */
 function openYandexReviews(e){
   try{ e.preventDefault(); e.stopPropagation(); }catch(_){}
-  const url = "https://yandex.ru/sprav/widget/rating-badge/11046753996?type=rating";
-  try{
-    if (window.Telegram && Telegram.WebApp && typeof Telegram.WebApp.openLink === "function"){
-      Telegram.WebApp.openLink(url);
-      return;
-    }
-  }catch(_){}
-  window.open(url, "_blank");
+  closeTopMenu();
+  openLinkSafe(YA_REVIEW_URL);
 }
+
+/* ✅ Instagram: новый аккаунт */
 function openInstagram(e){
   try{ e.preventDefault(); e.stopPropagation(); }catch(_){}
-  const url = "https://www.instagram.com/orzu_dil/";
   closeTopMenu();
-  try{
-    if (window.Telegram && Telegram.WebApp && typeof Telegram.WebApp.openLink === "function"){
-      Telegram.WebApp.openLink(url);
-      return;
-    }
-  }catch(_){}
-  window.open(url, "_blank");
+  openLinkSafe(INSTAGRAM_URL);
 }
+
 function openAbout(){
   closeTopMenu();
   document.getElementById('aboutModal').classList.add('show');
@@ -1313,11 +1277,9 @@ function updateTypeFields(){
 }
 
 function updatePaymentUI(){
-  // online details
   const showOnline = (payment === 'online');
   onlineDetails.classList.toggle('show', showOnline);
 
-  // click qr
   const showClick = (payment === 'click');
   clickQR.classList.toggle('show', showClick);
 }
@@ -1395,7 +1357,6 @@ function applyLang(){
   document.getElementById('onlineCardValue').innerText = ONLINE_PAY.card;
   document.getElementById('onlineNameValue').innerText = ONLINE_PAY.receiver;
 
-  // подпись под QR для click
   if(clickQrCap) clickQrCap.innerText = TEXT[lang].clickQr || 'CLICK QR';
 
   renderPopular();
