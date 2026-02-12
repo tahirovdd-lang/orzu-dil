@@ -19,10 +19,16 @@ BOT_TOKEN = os.getenv("BOT_TOKEN")
 if not BOT_TOKEN:
     raise RuntimeError("❌ BOT_TOKEN не найден. Добавь переменную окружения BOT_TOKEN.")
 
-# ✅ НОВЫЕ ДАННЫЕ
+# ✅ ДАННЫЕ
 BOT_USERNAME = "ORZUDILbot"              # без @
-ADMIN_ID = 6013591658                   # ID Admin
 CHANNEL_ID = "@ORZUDILKAFE"              # канал (без https://t.me/)
+
+# ✅ АДМИНЫ (всем будут приходить заказы)
+ADMIN_IDS = [
+    6013591658,   # основной админ
+    1076937219,
+    117347904,
+]
 
 # ✅ WEBAPP URL (GitHub Pages)
 WEBAPP_URL = "https://tahirovdd-lang.github.io/orzu-dil/?v=1"
@@ -41,7 +47,6 @@ def allow_start(user_id: int, ttl: float = 2.0) -> bool:
     _last_start[user_id] = now
     return True
 
-
 # ====== КНОПКИ ======
 BTN_OPEN_MULTI = "Ochish • Открыть • Open"
 
@@ -58,7 +63,6 @@ def kb_channel_deeplink() -> InlineKeyboardMarkup:
         inline_keyboard=[[InlineKeyboardButton(text=BTN_OPEN_MULTI, url=deeplink)]]
     )
 
-
 # ====== ТЕКСТ ======
 def welcome_text() -> str:
     return (
@@ -69,7 +73,6 @@ def welcome_text() -> str:
         "🇬🇧 Welcome to <b>ORZU-DIL</b>! 👋 "
         "Choose your favorite dishes and place an order — just tap “Open” below."
     )
-
 
 # ====== /start ======
 @dp.message(CommandStart())
@@ -84,11 +87,10 @@ async def startapp(message: types.Message):
         return
     await message.answer(welcome_text(), reply_markup=kb_webapp_reply())
 
-
 # ====== ПОСТ В КАНАЛ ======
 @dp.message(Command("post_menu"))
 async def post_menu(message: types.Message):
-    if message.from_user.id != ADMIN_ID:
+    if message.from_user.id not in ADMIN_IDS:
         return await message.answer("⛔️ Нет доступа.")
 
     text = (
@@ -110,7 +112,6 @@ async def post_menu(message: types.Message):
     except Exception as e:
         logging.exception("CHANNEL POST ERROR")
         await message.answer(f"❌ Ошибка отправки в канал: <code>{e}</code>")
-
 
 # ====== ВСПОМОГАТЕЛЬНЫЕ ======
 def fmt_sum(n: int) -> str:
@@ -204,6 +205,13 @@ def build_order_lines(data: dict) -> tuple[list[str], dict]:
 
     return lines, order_dict
 
+async def notify_admins(text: str):
+    """Отправить сообщение всем админам. Ошибки по одному админу не ломают рассылку."""
+    for admin_id in ADMIN_IDS:
+        try:
+            await bot.send_message(admin_id, text)
+        except Exception as e:
+            logging.exception(f"ADMIN SEND ERROR to {admin_id}: {e}")
 
 # ====== ЗАКАЗ ИЗ WEBAPP ======
 @dp.message(F.web_app_data)
@@ -236,7 +244,7 @@ async def webapp_data(message: types.Message):
     pay_label = {"cash": "💵 Наличные", "click": "💳 Безнал (CLICK)"}.get(payment, payment)
     type_label = {"delivery": "🚚 Доставка", "pickup": "🏃 Самовывоз"}.get(order_type, order_type)
 
-    # ====== АДМИН ======
+    # ====== АДМИНЫ (всем) ======
     admin_text = (
         "🚨 <b>НОВЫЙ ЗАКАЗ ORZU-DIL</b>\n"
         f"🆔 <b>{order_id}</b>\n\n"
@@ -248,11 +256,10 @@ async def webapp_data(message: types.Message):
         f"\n📞 <b>Телефон:</b> {phone}"
         f"\n👤 <b>Telegram:</b> {tg_label(message.from_user)}"
     )
-
     if comment:
         admin_text += f"\n💬 <b>Комментарий:</b> {comment}"
 
-    await bot.send_message(ADMIN_ID, admin_text)
+    await notify_admins(admin_text)
 
     # ====== КЛИЕНТ ======
     client_text = (
@@ -271,7 +278,6 @@ async def webapp_data(message: types.Message):
         client_text += f"\n💬 <b>Комментарий:</b> {comment}"
 
     await message.answer(client_text)
-
 
 # ====== ЗАПУСК ======
 async def main():
