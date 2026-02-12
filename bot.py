@@ -12,6 +12,8 @@ from aiogram.types import (
     InlineKeyboardMarkup, InlineKeyboardButton
 )
 
+from aiogram.exceptions import TelegramForbiddenError, TelegramBadRequest, TelegramNotFound
+
 logging.basicConfig(level=logging.INFO)
 
 # ====== НАСТРОЙКИ ======
@@ -19,18 +21,18 @@ BOT_TOKEN = os.getenv("BOT_TOKEN")
 if not BOT_TOKEN:
     raise RuntimeError("❌ BOT_TOKEN не найден. Добавь переменную окружения BOT_TOKEN.")
 
-# ✅ ДАННЫЕ
-BOT_USERNAME = "ORZUDILbot"              # без @
-CHANNEL_ID = "@ORZUDILKAFE"              # канал (без https://t.me/)
+BOT_USERNAME = "ORZUDILbot"         # без @
+CHANNEL_ID = "@ORZUDILKAFE"         # канал
 
-# ✅ АДМИНЫ (всем будут приходить заказы)
+# ✅ АДМИНЫ
+MAIN_ADMIN_ID = 6013591658
 ADMIN_IDS = [
-    6013591658,   # основной админ
+    6013591658,
     1076937219,
     117347904,
 ]
 
-# ✅ WEBAPP URL (GitHub Pages)
+# ✅ WEBAPP URL
 WEBAPP_URL = "https://tahirovdd-lang.github.io/orzu-dil/?v=1"
 
 bot = Bot(token=BOT_TOKEN, default=DefaultBotProperties(parse_mode="HTML"))
@@ -57,7 +59,6 @@ def kb_webapp_reply() -> ReplyKeyboardMarkup:
     )
 
 def kb_channel_deeplink() -> InlineKeyboardMarkup:
-    # deep link для открытия WebApp из поста в канале
     deeplink = f"https://t.me/{BOT_USERNAME}?startapp=menu"
     return InlineKeyboardMarkup(
         inline_keyboard=[[InlineKeyboardButton(text=BTN_OPEN_MULTI, url=deeplink)]]
@@ -72,6 +73,31 @@ def welcome_text() -> str:
         "Sevimli taomlaringizni tanlang va buyurtma bering — buning uchun pastdagi «Ochish» tugmasini bosing.\n\n"
         "🇬🇧 Welcome to <b>ORZU-DIL</b>! 👋 "
         "Choose your favorite dishes and place an order — just tap “Open” below."
+    )
+
+# ====== КОМАНДЫ ДЛЯ ДИАГНОСТИКИ ======
+@dp.message(Command("id"))
+async def cmd_id(message: types.Message):
+    u = message.from_user
+    await message.answer(
+        "✅ Ваши данные:\n"
+        f"ID: <code>{u.id}</code>\n"
+        f"Username: <code>{'@'+u.username if u.username else '—'}</code>\n"
+        f"Name: <code>{u.full_name}</code>"
+    )
+
+@dp.message(Command("test_admins"))
+async def cmd_test_admins(message: types.Message):
+    if message.from_user.id not in ADMIN_IDS:
+        return await message.answer("⛔️ Нет доступа.")
+    test_text = "✅ Тест: рассылка админам работает."
+    results = await send_to_admins(test_text)
+    ok = [str(a) for a, r in results.items() if r["ok"]]
+    bad = [f'{a}: {r["error"]}' for a, r in results.items() if not r["ok"]]
+    await message.answer(
+        "📨 <b>Результат теста:</b>\n"
+        f"✅ Ушло: {', '.join(ok) if ok else '—'}\n"
+        f"❌ Ошибки:\n" + ("\n".join(bad) if bad else "—")
     )
 
 # ====== /start ======
@@ -143,34 +169,23 @@ def safe_int(v, default=0) -> int:
         return default
 
 def build_order_lines(data: dict) -> tuple[list[str], dict]:
-    """
-    WebApp может присылать:
-      - order: {id/name: qty}
-      - items: [{name, qty, price, sum, id}, ...]
-      - cart:  {id/name: qty}
-    Возвращаем (lines, normalized_order_dict)
-    """
     order_dict: dict = {}
-
     raw_order = data.get("order")
     raw_items = data.get("items")
     raw_cart = data.get("cart")
 
-    # 1) order dict
     if isinstance(raw_order, dict):
         for k, v in raw_order.items():
             q = safe_int(v, 0)
             if q > 0:
                 order_dict[str(k)] = q
 
-    # 2) cart dict (fallback)
     if not order_dict and isinstance(raw_cart, dict):
         for k, v in raw_cart.items():
             q = safe_int(v, 0)
             if q > 0:
                 order_dict[str(k)] = q
 
-    # 3) items list (fallback)
     lines: list[str] = []
     if isinstance(raw_items, list) and raw_items:
         for it in raw_items:
@@ -181,7 +196,6 @@ def build_order_lines(data: dict) -> tuple[list[str], dict]:
             if qty <= 0:
                 continue
 
-            # нормализуем order_dict, если он пуст/нет
             if not order_dict:
                 key = clean_str(it.get("id")) or name
                 order_dict[key] = qty
@@ -195,7 +209,6 @@ def build_order_lines(data: dict) -> tuple[list[str], dict]:
             else:
                 lines.append(f"• {name} × {qty}")
 
-    # Если items не дали lines — строим lines из order_dict
     if not lines and order_dict:
         for k, q in order_dict.items():
             lines.append(f"• {k} × {q}")
@@ -205,13 +218,39 @@ def build_order_lines(data: dict) -> tuple[list[str], dict]:
 
     return lines, order_dict
 
-async def notify_admins(text: str):
-    """Отправить сообщение всем админам. Ошибки по одному админу не ломают рассылку."""
+async def send_to_admins(text: str) -> dict:
+    """
+    Возвращает результаты отправки:
+    {admin_id: {"ok": bool, "error": "..." }}
+    """
+    results: dict[int, dict] = {}
     for admin_id in ADMIN_IDS:
         try:
             await bot.send_message(admin_id, text)
+            results[admin_id] = {"ok": True, "error": ""}
+        except (TelegramForbiddenError, TelegramNotFound) as e:
+            # чаще всего: бот не может написать юзеру/чат не найден
+            results[admin_id] = {"ok": False, "error": f"{type(e).__name__}: {e}"}
+        except TelegramBadRequest as e:
+            # например: message is too long / chat not found / etc
+            results[admin_id] = {"ok": False, "error": f"{type(e).__name__}: {e}"}
         except Exception as e:
-            logging.exception(f"ADMIN SEND ERROR to {admin_id}: {e}")
+            results[admin_id] = {"ok": False, "error": f"{type(e).__name__}: {e}"}
+            logging.exception(f"ADMIN SEND ERROR to {admin_id}")
+    return results
+
+async def report_failures_to_main(results: dict, context: str = ""):
+    bad = [(aid, r["error"]) for aid, r in results.items() if not r["ok"]]
+    if not bad:
+        return
+    msg = "⚠️ <b>Проблема отправки админам</b>\n"
+    if context:
+        msg += f"<b>Контекст:</b> {context}\n"
+    msg += "\n".join([f"• <code>{aid}</code> — <code>{err}</code>" for aid, err in bad])
+    try:
+        await bot.send_message(MAIN_ADMIN_ID, msg)
+    except Exception:
+        logging.exception("FAIL REPORT TO MAIN ADMIN")
 
 # ====== ЗАКАЗ ИЗ WEBAPP ======
 @dp.message(F.web_app_data)
@@ -229,7 +268,7 @@ async def webapp_data(message: types.Message):
     if not isinstance(data, dict):
         data = {}
 
-    lines, _normalized_order = build_order_lines(data)
+    lines, _ = build_order_lines(data)
 
     total_num = safe_int(data.get("total_num"), 0)
     total_str = clean_str(data.get("total")) or fmt_sum(total_num)
@@ -244,7 +283,6 @@ async def webapp_data(message: types.Message):
     pay_label = {"cash": "💵 Наличные", "click": "💳 Безнал (CLICK)"}.get(payment, payment)
     type_label = {"delivery": "🚚 Доставка", "pickup": "🏃 Самовывоз"}.get(order_type, order_type)
 
-    # ====== АДМИНЫ (всем) ======
     admin_text = (
         "🚨 <b>НОВЫЙ ЗАКАЗ ORZU-DIL</b>\n"
         f"🆔 <b>{order_id}</b>\n\n"
@@ -259,7 +297,11 @@ async def webapp_data(message: types.Message):
     if comment:
         admin_text += f"\n💬 <b>Комментарий:</b> {comment}"
 
-    await notify_admins(admin_text)
+    # 1) Отправляем всем админам
+    results = await send_to_admins(admin_text)
+
+    # 2) Если кому-то не дошло — присылаем главному админу точную ошибку Telegram
+    await report_failures_to_main(results, context=f"order_id={order_id}")
 
     # ====== КЛИЕНТ ======
     client_text = (
