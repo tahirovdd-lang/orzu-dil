@@ -120,6 +120,7 @@ body{
   height:50px;
   object-fit:contain;
   filter: drop-shadow(0 10px 18px rgba(0,0,0,.55));
+  border-radius:14px; /* ✅ закругление */
 }
 
 .brand-title{
@@ -319,9 +320,9 @@ body{
 }
 .card:active{transform:scale(.99);}
 
-/* ✅✅ ФОТО “отдолили” + закругление + без обрезки */
+/* ✅✅ УМЕНЬШИЛИ ФОТО БЛЮД + закругление везде */
 .img{
-  height:140px;
+  height:118px;               /* было 140 */
   display:flex;
   align-items:center;
   justify-content:center;
@@ -338,7 +339,7 @@ body{
   width:100%;
   height:100%;
   object-fit:contain;
-  border-radius:18px;
+  border-radius:22px;         /* ✅ сильнее закруглили */
   transform:none;
   transition:.15s;
   filter:saturate(1.15) contrast(1.06) brightness(1.06) drop-shadow(0 12px 18px rgba(0,0,0,.55));
@@ -504,7 +505,7 @@ textarea.input{height:90px;}
 .click-qr img{
   width:min(280px, 100%);
   height:auto;
-  border-radius:16px;
+  border-radius:18px; /* ✅ закругление */
   border:1px solid rgba(216,176,76,.16);
   background:#fff;
   display:block;
@@ -566,9 +567,9 @@ mark{background:rgba(216,176,76,.22);padding:0 .12em;border-radius:6px;color:var
 .popular-title{width:100%;font-weight:900;padding:8px 2px 10px;display:flex;align-items:center;gap:8px;color:var(--text);}
 .popular-row{display:flex;gap:14px;overflow-x:auto;padding:2px 2px 14px; -webkit-overflow-scrolling:touch; scroll-snap-type:x proximity;}
 
-/* ✅✅ Увеличили и адаптировали Popular под фото */
+/* ✅✅ УМЕНЬШИЛИ ФОТО В “ПОПУЛЯРНОЕ” + закругление */
 .pop-card{
-  min-width:200px;                 /* было 150 */
+  min-width:190px;                 /* было 200 */
   border-radius:var(--r-lg);
   padding:12px;
   background:linear-gradient(180deg, rgba(255,255,255,.06), rgba(255,255,255,.03));
@@ -582,23 +583,22 @@ mark{background:rgba(216,176,76,.22);padding:0 .12em;border-radius:6px;color:var
 }
 .pop-card:active{transform:scale(.99);}
 
-/* фото выше и крупнее */
 .pop-img{
-  height:110px;                     /* было 74 */
-  border-radius:20px;
+  height:92px;                     /* было 110 */
+  border-radius:22px;
   overflow:hidden;
   display:flex;
   align-items:center;
   justify-content:center;
   background:radial-gradient(220px 120px at 50% 60%, rgba(216,176,76,.10), transparent 60%), rgba(0,0,0,.18);
   border:1px solid rgba(216,176,76,.12);
-  padding:10px;                     /* “отдаляет” фото */
+  padding:10px;
 }
 .pop-img img{
   width:100%;
   height:100%;
   object-fit:contain;
-  border-radius:16px;
+  border-radius:22px;              /* ✅ закругление */
   filter:saturate(1.15) contrast(1.06) brightness(1.06) drop-shadow(0 12px 18px rgba(0,0,0,.55));
 }
 
@@ -771,11 +771,13 @@ mark{background:rgba(216,176,76,.22);padding:0 .12em;border-radius:6px;color:var
   .payments{gap:8px;}
   .payments .btn{padding:12px 8px; font-size:12.5px;}
   .qbtn{padding:13px 16px; font-size:13.5px;}
-  .img{height:132px;}
 
-  /* популярное на маленьких экранах */
-  .pop-card{min-width:186px;}
-  .pop-img{height:104px;}
+  /* ✅ меньше фото в карточках на маленьких экранах */
+  .img{height:110px;}
+
+  /* ✅ популярное на маленьких экранах */
+  .pop-card{min-width:178px;}
+  .pop-img{height:86px;}
 }
 </style>
 </head>
@@ -801,7 +803,6 @@ mark{background:rgba(216,176,76,.22);padding:0 .12em;border-radius:6px;color:var
     </div>
 
     <div class="search-btn" onclick="toggleSearch()">🔍</div>
-    <!-- ✅ геолокация: открывает фикс. ссылку -->
     <div class="geo-btn" onclick="openGeoLink()" title="Геолокация">📍</div>
   </div>
 
@@ -815,7 +816,6 @@ mark{background:rgba(216,176,76,.22);padding:0 .12em;border-radius:6px;color:var
     </div>
 
     <div class="menu-list">
-      <!-- ✅ Оставить отзыв: теперь открывает ссылку -->
       <div class="menu-item" onclick="openYandexReviews(event)" role="button">
         <div class="menu-left">
           <div class="menu-ic">⭐</div>
@@ -923,8 +923,6 @@ mark{background:rgba(216,176,76,.22);padding:0 .12em;border-radius:6px;color:var
       <button class="btn" id="payOnline" onclick="setPayment('online')"></button>
     </div>
 
-    <!-- ✅ QR для CLICK (появляется когда выбрали CLICK) -->
-    <!-- ✅ Название файла (в папку images, JPG): click_qr_orzu_dil.jpg -->
     <div class="click-qr" id="clickQR">
       <img src="images/click_qr_orzu_dil.jpg" onerror="this.style.display='none'">
       <div class="qr-cap" id="clickQrCap">CLICK QR • Получатель: Mansur Bozorov</div>
@@ -950,7 +948,7 @@ mark{background:rgba(216,176,76,.22);padding:0 .12em;border-radius:6px;color:var
 
     <button class="order-btn" id="orderBtn" onclick="sendOrder()"></button>
   </div>
-</div><!-- /.app -->
+</div>
 
 <div class="popup" id="popup"><div class="popup-box">✅ Заказ принят!</div></div>
 
@@ -1040,13 +1038,11 @@ function callPhone(e){
   try{ window.location.href = tel; }catch(_){}
 }
 
-/* ✅ геолокация: фиксированная ссылка */
 function openGeoLink(){
   closeTopMenu();
   openLinkSafe(YA_MAP_URL);
 }
 
-/* меню */
 function openTopMenu(){
   try{ closeSearch(); }catch(_){}
   document.getElementById('menuBackdrop').classList.add('show');
@@ -1057,14 +1053,12 @@ function closeTopMenu(){
   document.getElementById('menuSheet').classList.remove('show');
 }
 
-/* ✅ Оставить отзыв: фиксированная ссылка */
 function openYandexReviews(e){
   try{ e.preventDefault(); e.stopPropagation(); }catch(_){}
   closeTopMenu();
   openLinkSafe(YA_REVIEW_URL);
 }
 
-/* ✅ Instagram: новый аккаунт */
 function openInstagram(e){
   try{ e.preventDefault(); e.stopPropagation(); }catch(_){}
   closeTopMenu();
@@ -1088,7 +1082,6 @@ const tg_username = tgUser.username || "";
 const tg_first_name = tgUser.first_name || "";
 const tg_id = tgUser.id || "";
 
-/* ✅ по умолчанию: UZ + самовывоз */
 let lang='uz', category='breakfast', type='pickup', payment='cash', cart={};
 
 const DELIVERY_FEE = 15000;
@@ -1241,7 +1234,6 @@ const deliveryFee = document.getElementById('deliveryFee');
 const clickQR = document.getElementById('clickQR');
 const clickQrCap = document.getElementById('clickQrCap');
 
-/* ✅ ДАННЫЕ ОНЛАЙН ОПЛАТЫ */
 const ONLINE_PAY = {
   card: "9860 1301 4299 4636",
   receiver: "Mansur Bozorov"
